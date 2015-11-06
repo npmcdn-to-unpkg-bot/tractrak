@@ -1,7 +1,7 @@
 {
-	"name": "rappasoft/laravel-5-boilerplate",
-	"description": "The Laravel Framework Boilerplate Project.",
-	"keywords": ["framework", "laravel", "boilerplate"],
+	"name": "mecu/tractrak",
+	"description": "Getting your track results, fast.",
+	"keywords": ["tractrak", "track"],
 	"license": "MIT",
 	"type": "project",
 	"require": {
@@ -16,7 +16,9 @@
 	    "laracasts/utilities": "~2.0",
 		"arcanedev/log-viewer": "~3.4.0",
 		"creativeorange/gravatar": "~1.0",
-		"predis/predis": "^1.0"
+		"predis/predis": "^1.0",
+		"vinkla/pusher": "^2.1",
+		"ddeboer/data-import": "@stable"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",

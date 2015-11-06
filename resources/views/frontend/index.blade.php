@@ -192,6 +192,10 @@
         </div><!-- col-md-10 -->
 
     </div><!-- row -->
+
+    <p>background-color: #565656;<br>
+        color: #39ff14;<br>
+        <a href="http://www.colorhexa.com/39ff14">http://www.colorhexa.com/39ff14</a></p>
 @endsection
 
 @section('after-scripts-end')

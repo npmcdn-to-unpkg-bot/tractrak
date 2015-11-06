@@ -164,9 +164,10 @@ return [
 		'Arcanedev\LogViewer\LogViewerServiceProvider',
 		'Creativeorange\Gravatar\GravatarServiceProvider',
 		'HieuLe\Active\ActiveServiceProvider',
-		'Laracasts\Utilities\JavaScript\JavascriptServiceProvider',
+		'Laracasts\Utilities\JavaScript\JavaScriptServiceProvider',
 		'Laravel\Socialite\SocialiteServiceProvider',
 		'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',
+        	Vinkla\Pusher\PusherServiceProvider::class,
 	],
 
 	/*
