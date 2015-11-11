@@ -24,7 +24,7 @@
         {!! HTML::script("js/vendor/modernizr-2.8.3.min.js") !!}
     </head>
     <body>
-        <!--[if lt IE 8]>
+        <!--[if lt IE 9]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 

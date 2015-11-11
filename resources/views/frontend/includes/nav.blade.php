@@ -7,7 +7,8 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="">{{ app_name() }}</a>
+				<a class="pull-left" href="/"><img src="/tractrak-logo-48x48.png" height="48px" width="48px"/></a>
+				<a class="navbar-brand" href="/">TracTrak Beta</a>
 			</div>
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
