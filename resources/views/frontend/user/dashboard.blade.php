@@ -9,51 +9,65 @@
 				<div class="panel-heading">{{ trans('navs.dashboard') }}</div>
 
 				<div class="panel-body">
-					<div role="tabpanel">
-
-                      <!-- Nav tabs -->
-                      <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{{ trans('navs.my_information') }}</a></li>
-                      </ul>
-
-                      <div class="tab-content">
-
-                        <div role="tabpanel" class="tab-pane active" id="profile">
-                            <table class="table table-striped table-hover table-bordered dashboard-table">
-                                <tr>
-                                    <th>{{ trans('validation.attributes.name') }}</th>
-                                    <td>{!! $user->name !!}</td>
-                                </tr>
-                                <tr>
-                                    <th>{{ trans('validation.attributes.email') }}</th>
-                                    <td>{!! $user->email !!}</td>
-                                </tr>
-                                <tr>
-                                    <th>{{ trans('validation.attributes.created_at') }}</th>
-                                    <td>{!! $user->created_at !!} ({!! $user->created_at->diffForHumans() !!})</td>
-                                </tr>
-                                <tr>
-                                    <th>{{ trans('validation.attributes.last_updated') }}</th>
-                                    <td>{!! $user->updated_at !!} ({!! $user->updated_at->diffForHumans() !!})</td>
-                                </tr>
-                                <tr>
-                                    <th>{{ trans('validation.attributes.actions') }}</th>
-                                    <td>
-                                        <a href="{!!route('frontend.profile.edit')!!}" class="btn btn-primary btn-xs">{{ trans('labels.edit_information') }}</a>
-                                        <a href="{!!url('auth/password/change')!!}" class="btn btn-warning btn-xs">{{ trans('navs.change_password') }}</a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div><!--tab panel profile-->
-
-                      </div><!--tab content-->
-
-                    </div><!--tab panel-->
-
+                    <table class="table table-striped table-hover table-bordered dashboard-table">
+                        <tr>
+                            <th>{{ trans('validation.attributes.name') }}</th>
+                            <td>{!! $user->name !!}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ trans('validation.attributes.email') }}</th>
+                            <td>{!! $user->email !!}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ trans('validation.attributes.created_at') }}</th>
+                            <td>{!! $user->created_at !!} ({!! $user->created_at->diffForHumans() !!})</td>
+                        </tr>
+                        <tr>
+                            <th>{{ trans('validation.attributes.last_updated') }}</th>
+                            <td>{!! $user->updated_at !!} ({!! $user->updated_at->diffForHumans() !!})</td>
+                        </tr>
+                        <tr>
+                            <th>{{ trans('validation.attributes.actions') }}</th>
+                            <td>
+                                <a href="{!!route('frontend.profile.edit')!!}" class="btn btn-primary btn-sm">{{ trans('labels.edit_information') }}</a>
+                                <a href="{!!url('auth/password/change')!!}" class="btn btn-warning btn-sm">{{ trans('navs.change_password') }}</a>
+                            </td>
+                        </tr>
+                    </table>
 				</div><!--panel body-->
 
-			</div><!-- panel -->
+            </div><!-- panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">Meet Management</div>
 
+                <div class="panel-body">
+                    <a href="{!!route('frontend.meet.create')!!}" class="btn btn-primary btn-sm">Create Meet</a>
+                </div><!--panel body-->
+
+            </div><!-- panel -->
+            @if ($user->meets)
+            <div class="panel panel-default">
+                <div class="panel-heading">Your Meets</div>
+
+                <div class="panel-body">
+                    @foreach($user->meets as $meet)
+                    <li>{{ $meet->name }}, {{ $meet->location }} on {{ $meet->meet_date }}
+                        <a href="{!! route('frontend.meet.modify', ['id' => $meet->id]) !!}" class="btn btn-primary btn-sm">Modify Meet (not working)</a>
+                        <a href="{!! route('frontend.meet.run', ['id' => $meet->id]) !!}" class="btn btn-success btn-sm">Run Meet</a>
+                    </li>
+                    @endforeach
+                </div><!--panel body-->
+            </div><!-- panel -->
+            @endif
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Meet Credits</div>
+
+                <div class="panel-body">
+                    You have X credits.
+                </div><!--panel body-->
+
+            </div><!-- panel -->
 		</div><!-- col-md-10 -->
 
 	</div><!-- row -->

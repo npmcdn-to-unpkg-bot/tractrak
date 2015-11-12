@@ -1,5 +1,6 @@
 <?php namespace App\Models\Access\User;
 
+use App\Models\Meet;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Access\User\Traits\UserAccess;
@@ -59,10 +60,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/*
-	 * The meets owner of this meet
+	 * The meets owned by this user
 	 */
-	public function owner()
+	public function meets()
 	{
-		$this->hasMany('App\Meet', 'owner_id', 'id');
+		return $this->hasMany(Meet::class, 'owner_id', 'id');
 	}
 }

@@ -1,5 +1,6 @@
 <?php namespace App\Models;
 
+use App\Models\Access\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -36,14 +37,22 @@ class Meet extends Model {
      */
     public function owner()
     {
-        $this->hasOne('App\User', 'id', 'owner_id');
+        return $this->hasOne(User::class, 'id', 'owner_id');
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setOwner(User $user)
+    {
+        $this->owner_id = $user->id;
     }
 
     /*
      * The season of this meet
      */
-    public function season()
-    {
-        $this->hasOne('App\Season', 'id', 'season_id');
-    }
+//    public function season()
+//    {
+//        $this->hasOne('App\Season', 'id', 'season_id');
+//    }
 }

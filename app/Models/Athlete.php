@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Athlete
+ *  Gender: 0=male, 1=female
  */
 class Athlete extends Model {
 
@@ -36,6 +37,6 @@ class Athlete extends Model {
 	 */
 	public function teams()
 	{
-		return $this->belongsToMany('App\Team')->withPivot('current');
+		return $this->belongsToMany('App\Models\Team')->withPivot('current');
 	}
 }
