@@ -10,11 +10,15 @@
                 <div class="panel-body">
                     <ol>
                         <li>Dropbox setup?</li>
-                        <li>Paid?</li>
+                        @if ($meet->isPaid())
+                            <li class="label-success">Paid</li>
+                        @else
+                            <li class="label-danger">You still need to pay.</li>
+                        @endif
                         <li>Pre-load events? lynx.evt</li>
                         <li>Pre-load athletes? lynx.ppl</li>
                         <li>Pre-load schedule? lynx.sch</li>
-                        <li>Print QR codes?</li>
+                        <li>Print QR codes? Unless you're going to tell people. Over, and over and over and over and over.</li>
                         <li>Run!</li>
                     </ol>
                 </div><!--panel body-->

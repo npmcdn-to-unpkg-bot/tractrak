@@ -81,8 +81,10 @@ class MeetController extends Controller {
             case 'sch': $this->schFile($id, $file); break;
         }
 
+        $meet = Meet::findOrFail($id);
         return view('frontend.meet.run')
-            ->withUser(auth()->user());
+            ->withUser(auth()->user())
+            ->with(['meet' => $meet]);
     }
 
     /**
@@ -148,8 +150,8 @@ class MeetController extends Controller {
             // 4 = FirstName
             // 5 = TeamName
             if (!empty($row[0])) {
-                $gender = \in_array($row[4], ['Boys']) !== false ? 0 : 1;
-                $team = \in_array($row[4], ['Relay', 'Medley']) !== false ? 1 : 0;
+                $gender = \strpos($row[4], 'Boys') !== false ? 0 : 1;
+                $team = \strpos($row[4], 'Relay') !== false && \strpos($row[4], 'Medley') !== false ? 1 : 0;
                 /** @var Event $event */
                 $event = Event::firstOrCreate(['name' => $row[3], 'gender' => $gender, 'athlete_team' => $team]);
 

@@ -45,6 +45,6 @@ class Athlete extends Model {
 	 */
 	public function events()
 	{
-		return $this->hasMany('App\Models\Event')->withPivot('lane', 'result', 'time');
+		return $this->belongsToMany('App\Models\Event')->withPivot('lane', 'result', 'time');
 	}
 }

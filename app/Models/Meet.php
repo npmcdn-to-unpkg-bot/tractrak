@@ -50,6 +50,11 @@ class Meet extends Model {
         $this->owner_id = $user->id;
     }
 
+    public function isPaid()
+    {
+        return $this->paid === 1;
+    }
+
     /*
      * The season of this meet
      */
