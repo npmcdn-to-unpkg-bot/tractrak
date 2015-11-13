@@ -18,8 +18,10 @@
 		"creativeorange/gravatar": "~1.0",
 		"predis/predis": "^1.0",
 		"vinkla/pusher": "^2.1",
-		"ddeboer/data-import": "@stable"
-	},
+                "ddeboer/data-import": "@stable",
+                "endroid/qrcode": "^1.5",
+                "barryvdh/laravel-dompdf": "^0.6.0"
+        },
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",

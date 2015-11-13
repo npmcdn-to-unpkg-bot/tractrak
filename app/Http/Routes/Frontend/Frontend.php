@@ -4,6 +4,7 @@
  * Frontend Controllers
  */
 get('/', 'FrontendController@index')->name('home');
+get('meet/{id}', 'MeetController@live')->name('frontend.meet.live');
 get('macros', 'FrontendController@macros');
 
 /**

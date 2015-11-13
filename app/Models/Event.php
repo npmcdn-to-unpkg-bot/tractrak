@@ -25,7 +25,7 @@ class Event extends Model {
 	 */
 	public function meets()
 	{
-		return $this->belongsToMany('App\Meet')->withPivot('current');
+		return $this->belongsToMany('App\Models\Meet')->withPivot('schedule', 'event', 'round', 'heat');
 	}
 
     public function isAthleteEvent()

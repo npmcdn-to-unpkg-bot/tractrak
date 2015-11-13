@@ -167,7 +167,7 @@ return [
 		'Laracasts\Utilities\JavaScript\JavaScriptServiceProvider',
 		'Laravel\Socialite\SocialiteServiceProvider',
 		'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',
-        	Vinkla\Pusher\PusherServiceProvider::class,
+		Vinkla\Pusher\PusherServiceProvider::class,
 	],
 
 	/*

@@ -36,6 +36,14 @@ class Team extends Model {
 	 */
 	public function athletes()
 	{
-		return $this->belongsToMany('App\Athlete')->withPivot('current');
+		return $this->belongsToMany('App\Models\Athlete')->withPivot('current');
+	}
+
+	/*
+	 * The events(s) this Athlete belongs to
+	 */
+	public function events()
+	{
+		return $this->hasMany('App\Models\Event')->withPivot('lane', 'result', 'time');
 	}
 }

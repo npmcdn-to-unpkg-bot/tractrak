@@ -1,5 +1,7 @@
 <?php namespace App\Models;
 
+use URL;
+use Endroid\QrCode\QrCode;
 use App\Models\Access\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -55,4 +57,21 @@ class Meet extends Model {
 //    {
 //        $this->hasOne('App\Season', 'id', 'season_id');
 //    }
+
+    public function qr()
+    {
+        $qrCode = new QrCode();
+        $qrCode
+            ->setText(URL::route('frontend.meet.live', ['id' => $this->id]))
+            ->setSize(300)
+            ->setPadding(10)
+            ->setErrorCorrection('high')
+            ->setForegroundColor(['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0])
+            ->setBackgroundColor(['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0])
+            ->setLabel('TracTrak.com')
+            ->setLabelFontSize(24)
+        ;
+
+        return $qrCode;
+    }
 }
