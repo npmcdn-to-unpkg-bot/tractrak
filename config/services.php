@@ -66,4 +66,10 @@ return [
 		'client_secret' => env('GOOGLE_CLIENT_SECRET'),
 		'redirect' => env('GOOGLE_REDIRECT'),
 	],
+
+	'dropbox' => [
+			'client_id' => env('DROPBOX_KEY'),
+			'client_secret' => env('DROPBOX_SECRET'),
+			'redirect' => env('DROPBOX_REDIRECT_URI'),
+	],
 ];

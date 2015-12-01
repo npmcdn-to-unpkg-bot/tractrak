@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Meet;
+
 /**
  * Switch between the included languages
  */
@@ -46,4 +48,35 @@ get('/bridge', function() {
                       array('text' => 'Preparing the Pusher Laracon.eu workshop!'));
 
     return view('welcome');
+});
+
+get('api/upcoming-meets', function() {
+    $meets = Meet::latest()->take(5)->get();
+
+    $return = [];
+    foreach ($meets as $meet) {
+        $return[] = [
+            'link' => URL::route('frontend.meet.live', ['id' => $meet->id]),
+            'name' => $meet->name,
+            'datetime' => date('Y-m-d g:ia', strtotime($meet->meet_date)),
+        ];
+    }
+
+    return $return;
+});
+
+get('api/current-meets', function() {
+
+    $meets = DB::table('meets')->whereBetween('meet_date', [date('Y-m-d 00:00:00'), date('Y-m-d 23:59:00')])->get();
+
+    $return = [];
+    foreach ($meets as $meet) {
+        $return[$meet->id] = [
+            'link' => URL::route('frontend.meet.live', ['id' => $meet->id]),
+            'name' => $meet->name,
+            'datetime' => date('Y-m-d g:ia', strtotime($meet->meet_date)),
+        ];
+    }
+
+    return $return;
 });

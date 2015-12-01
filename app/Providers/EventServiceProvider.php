@@ -24,6 +24,9 @@ class EventServiceProvider extends ServiceProvider {
 		'App\Events\Frontend\Auth\UserLoggedOut' => [
 			'App\Listeners\Frontend\Auth\UserLoggedOutHandler',
 		],
+		'SocialiteProviders\Manager\SocialiteWasCalled' => [
+			'SocialiteProviders\Dropbox\DropboxExtendSocialite@handle'
+		],
 	];
 
 	/**

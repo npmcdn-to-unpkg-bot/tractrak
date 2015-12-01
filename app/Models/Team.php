@@ -40,10 +40,10 @@ class Team extends Model {
 	}
 
 	/*
-	 * The events(s) this Athlete belongs to
+	 * The race(s) this Team has
 	 */
-	public function events()
+	public function races()
 	{
-		return $this->belongsToMany('App\Models\Event')->withPivot('lane', 'result', 'time');
+		return $this->morphToMany('App\Models\Race', 'competitor');
 	}
 }

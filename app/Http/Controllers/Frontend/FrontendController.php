@@ -1,6 +1,8 @@
 <?php namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Meet;
+use URL;
 
 /**
  * Class FrontendController
@@ -13,11 +15,19 @@ class FrontendController extends Controller {
 	 */
 	public function index()
 	{
-		javascript()->put([
-			'test' => 'it works!'
-		]);
+        $meets = Meet::latest()->take(5)->get();
 
-		return view('frontend.index');
+        $return = [];
+        foreach ($meets as $meet) {
+            $return[] = [
+                'link' => URL::route('frontend.meet.live', ['id' => $meet->id]),
+                'name' => $meet->name,
+                'datetime' => date('Y-m-d g:ia', strtotime($meet->meet_date)),
+            ];
+        }
+
+        $data['meets'] = $return;
+		return view('frontend.index', $data);
 	}
 
 	/**

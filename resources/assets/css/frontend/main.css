@@ -8008,3 +8008,11 @@ button.close {
   content: ""; }
 
 /*# sourceMappingURL=main.css.map */
+
+.tt-green {
+  color:#39ff14
+}
+
+.tt-background {
+  background-color: #565656;
+}

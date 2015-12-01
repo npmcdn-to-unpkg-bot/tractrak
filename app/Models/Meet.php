@@ -79,4 +79,14 @@ class Meet extends Model {
 
         return $qrCode;
     }
+
+    public function isDropBoxReady()
+    {
+        return !is_null($this->owner()->first()->accessToken);
+    }
+
+    public function races()
+    {
+        return $this->hasMany('App\Models\Race');
+    }
 }

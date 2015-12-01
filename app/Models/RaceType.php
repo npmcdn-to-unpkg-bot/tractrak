@@ -3,15 +3,15 @@
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Event
+ * Class RaceType
  */
-class Event extends Model {
+class RaceType extends Model {
 	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
 	 */
-	protected $table = 'events';
+	protected $table = 'race_types';
 
 	/**
 	 * The attributes that are not mass assignable.
@@ -20,21 +20,21 @@ class Event extends Model {
 	 */
 	protected $guarded = ['id'];
 
-	/*
-	 * The meet(s) this Event belongs to
-	 */
-	public function meets()
-	{
-		return $this->belongsToMany('App\Models\Meet')->withPivot('schedule', 'event', 'round', 'heat');
-	}
+    /*
+     * The race type (800m, Gender, Relay, etc)
+     */
+    public function type()
+    {
+        return $this->hasMany('App\Models\Race', 'id', 'race_type');
+    }
 
-    public function isAthleteEvent()
+    public function isAthleteRace()
     {
         if ($this->athlete_team === 0) return true;
         return false;
     }
 
-    public function isTeamEvent()
+    public function isTeamRace()
     {
         if ($this->athlete_team === 1) return true;
         return false;

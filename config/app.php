@@ -165,9 +165,10 @@ return [
 		'Creativeorange\Gravatar\GravatarServiceProvider',
 		'HieuLe\Active\ActiveServiceProvider',
 		'Laracasts\Utilities\JavaScript\JavaScriptServiceProvider',
-		'Laravel\Socialite\SocialiteServiceProvider',
+		'SocialiteProviders\Manager\ServiceProvider',
 		'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',
 		Vinkla\Pusher\PusherServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 	],
 
 	/*
@@ -222,6 +223,7 @@ return [
 		'Gravatar'  => 'Creativeorange\Gravatar\Facades\Gravatar',
 		'HTML'		=> 'Illuminate\Html\HtmlFacade',
 		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
-
+		'Socialite' => 'Laravel\Socialite\Facades\Socialite',
+        'Debugbar'  => Barryvdh\Debugbar\Facade::class,
 	],
 ];

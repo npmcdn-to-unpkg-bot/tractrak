@@ -3,11 +3,18 @@
 use App\Http\Controllers\Controller;
 use App\Models\Athlete;
 use App\Models\Meet;
+use App\Models\Race;
+use App\Models\RaceType;
 use App\Models\Team;
-use App\Models\Event;
+use Dropbox;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Input;
+use Mockery\Exception\RuntimeException;
 use URL;
 use Ddeboer\DataImport\Reader\CsvReader;
+use Session;
+use Socialite;
 
 /**
  * Class MeetController
@@ -75,10 +82,24 @@ class MeetController extends Controller {
             dd('That is not a valid file extension.');
         }
 
+        $meet = Meet::find($id);
+
         switch ($fileExtension) {
-            case 'ppl': $this->pplFile($id, $file); break;
-            case 'evt': $this->evtFile($id, $file); break;
-            case 'sch': $this->schFile($id, $file); break;
+            case 'ppl':
+                $this->pplFile($file);
+                $meet->ppl = true;
+                $meet->save();
+                break;
+            case 'evt':
+                $this->evtFile($id, $file);
+                $meet->evt = true;
+                $meet->save();
+                break;
+            case 'sch':
+                $this->schFile($meet, $file);
+                $meet->sch = true;
+                $meet->save();
+                break;
         }
 
         return back()
@@ -86,10 +107,9 @@ class MeetController extends Controller {
     }
 
     /**
-     * @param $id
      * @param $file
      */
-    private function pplFile($id, $file)
+    private function pplFile($file)
     {
         $localFile = uniqid();
         $file->move('/tmp', $localFile);
@@ -97,6 +117,9 @@ class MeetController extends Controller {
         $reader = new CsvReader($file);
 
         foreach ($reader as $row) {
+            if (!isset($row[1])) {
+                continue;
+            }
         // $row will be an array containing the comma-separated elements of the line:
         // array(
         //   0 => AthleteId,
@@ -105,24 +128,25 @@ class MeetController extends Controller {
         //   3 => Team
         //   4 => ?
         //   5 => Gender
-        //   6 => Events (one is int, two is csv list in quotes ")
+        //   6 => Races (one is int, two is csv list in quotes ")
         // )
 
             $gender = $row[5] === 'M' ? 0 : 1;
             /** @var Athlete $athlete */
-            $athlete = Athlete::where(['firstname' => $row[2], 'lastname' => $row[1], 'gender' => $gender])->firstOrCreate();
+            $athlete = Athlete::firstOrCreate(['firstname' => $row[2], 'lastname' => $row[1], 'gender' => $gender]);
 
             /** @var Team $team */
-            $team = Team::where(['name' => $row[3]])->firstOrCreate();
+            $team = Team::firstOrCreate(['name' => $row[3]]);
 
             $athlete->teams()->attach([$team->id => ['current' => true]]);
         }
         unset($localFile);
     }
-
+// Bob Goeken March 23rd 303-437-9085
     /**
-     * @param $id
+     * @param integer $id
      * @param $file
+     * @throws RuntimeException
      */
     private function evtFile($id, $file)
     {
@@ -133,7 +157,7 @@ class MeetController extends Controller {
 
         foreach ($reader as $row) {
             // Two types of rows depending on first value
-            // 0 = event
+            // 0 = Race
             // 1 = round
             // 2 = heat
             // 3 = Event Name
@@ -148,29 +172,42 @@ class MeetController extends Controller {
             // 4 = FirstName
             // 5 = TeamName
             if (!empty($row[0])) {
-                $gender = is_int(\strpos($row[4], 'Boys')) ? 0 : 1;
-                $team = \strpos($row[4], 'Relay') !== false && \strpos($row[4], 'Medley') !== false ? 1 : 0;
-                /** @var Event $event */
-                $event = Event::firstOrCreate(['name' => $row[3], 'gender' => $gender, 'athlete_team' => $team]);
+                $gender = is_int(\strpos($row[3], 'Boys')) ? 0 : 1;
+                $team = \strpos($row[3], 'Relay') !== false || \strpos($row[3], 'Medley') !== false ? 1 : 0;
+                $raceType = RaceType::firstOrCreate(['name' => $row[3], 'gender' => $gender, 'athlete_team' => $team]);
 
-                $event->meets()->attach([$id => ['event' => $row[0], 'round' => $row[1], 'heat' => $row[2]]]);
+                /** @var Race $race */
+                $race = Race::firstOrCreate([
+                    'meet_id' => $id,
+                    'race_type' => $raceType->id,
+                    'event' => $row[0],
+                    'round' => $row[1],
+                    'heat' => $row[2],
+                    ]);
             } else {
+                if (!is_object($race)) {
+                    throw new RuntimeException('The file is not formatted properly.');
+                }
                 // If 4 is empty, this is a team
                 if (empty($row[4])) {
+                    // TODO Need to find teams better, filtering by state at least
                     /** @var Team $team */
                     $team = Team::firstOrCreate(['name' => $row[3]]);
                     $team->abbr = substr($row[5], 0, 4);
                     $team->save();
-                    $team->events()->attach([$event->id => ['lane' => $row[2]]]);
+                    if ($team->id === 0) {
+                        throw new RuntimeException('Team id is zero: '. $team->name);
+                    }
+                    $race->teams()->attach([$team->id => ['lane' => $row[2]]]);
                 } else {
                     /** @var Athlete $athlete */
                     $athlete = Athlete::firstOrCreate(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender]);
 
                     /** @var Team $team */
                     $team = Team::firstOrCreate(['name' => $row[5]]);
-
                     $athlete->teams()->attach([$team->id => ['current' => true]]);
-                    $athlete->events()->attach([$event->id => ['lane' => $row[2]]]);
+
+                    $race->athletes()->attach([$athlete->id => ['lane' => $row[2]]]);
                 }
             }
         }
@@ -178,16 +215,118 @@ class MeetController extends Controller {
     }
 
     /**
-     * @param $id
+     * @param Meet $meet
      * @param $file
      */
-    private function schFile($id, $file)
+    private function schFile($meet, $file)
     {
         $localFile = uniqid();
         $file->move('/tmp', $localFile);
         $file = new \SplFileObject("/tmp/$localFile");
         $reader = new CsvReader($file);
+        $order = 0;
+        foreach ($reader as $row) {
+            //Handles comment lines, like the very first line
+            if (!isset($row[1])) {
+                continue;
+            }
+            // 0 = event
+            // 1 = round
+            // 2 = heat
+            ++$order;
 
+            Race::where([
+                'meet_id' => $meet->id,
+                'event' => $row[0],
+                'round' => $row[1],
+                'heat' => $row[2],
+            ])->update(['schedule' => $order]);
+        }
         unset($localFile);
+    }
+
+    /**
+     * @param Request $request
+     * @param integer $id
+     * @return mixed
+     */
+    protected function dropboxStart(Request $request, $id)
+    {
+        $request->session()->flash('meetId', $id);
+        return Socialite::with('dropbox')->redirect();
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    protected function dropboxFinish(Request $request)
+    {
+        $dropboxUser = Socialite::with('dropbox')->user();
+        $token = $dropboxUser->token;
+
+        $user = auth()->user();
+        $user->accessToken = $token;
+        $user->save();
+
+        $meetId = $request->session()->pull('meetId');
+        return redirect()->route('frontend.meet.run', [$meetId]);
+    }
+
+    public function live($id)
+    {
+        $meet = Meet::findOrFail($id);
+
+        return view('frontend.meet.live')
+            ->withUser(auth()->user())
+            ->with(['meet' => $meet]);
+    }
+
+    /**
+     * TODO Tune/eager load queries, since this will get hit, A LOT
+     * @param $meetId
+     * @param $eventId
+     * @return array (This is Laravel automatically converted to JSON)
+     */
+    public function event($meetId, $eventId)
+    {
+        $races = Race::where(['meet_id' => $meetId, 'event' => $eventId])->get();
+        $return = [];
+
+        /* @var Race $race */
+        foreach($races as $race) {
+//            \Debugbar::info($race);
+            if ($race->isAthleteRace()) {
+                $athletes = $race->athletes()->get();
+//                \Debugbar::info($athletes);
+                foreach($athletes as $athlete) {
+                    $return[] = [
+                        $race->round,
+                        $race->heat,
+                        $athlete->pivot->lane,
+                        $athlete->lastname . ', ' . $athlete->firstname,
+                        $athlete->teams()->where(['current' => 1])->first()->abbr,
+                        !empty($athlete->pivot->result) ? $athlete->pivot->result : '&nbsp;',
+                        '&nbsp;',
+                    ];
+                }
+            } else {
+                $teams = $race->teams()->get();
+//                \Debugbar::info($teams);
+                foreach($teams as $team) {
+                    $return[] = [
+                        $race->round,
+                        $race->heat,
+                        $team->pivot->lane,
+                        $team->name,
+                        $team->abbr,
+                        !empty($team->pivot->result) ? $team->pivot->result : '&nbsp;',
+                        '&nbsp;',
+                    ];
+                }
+            }
+        }
+
+        return ['data' => $return];
     }
 }
