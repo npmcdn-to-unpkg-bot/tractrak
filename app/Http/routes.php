@@ -45,7 +45,7 @@ get('/bridge', function() {
 
     $pusher->trigger( 'test-channel',
                       'test-event', 
-                      array('text' => 'Preparing the Pusher Laracon.eu workshop!'));
+                      array('text' => 'TracTrak is FAST!'));
 
     return view('welcome');
 });

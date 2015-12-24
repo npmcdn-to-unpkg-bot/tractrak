@@ -290,7 +290,7 @@ class MeetController extends Controller {
      */
     public function event($meetId, $eventId)
     {
-        $races = Race::where(['meet_id' => $meetId, 'event' => $eventId])->get();
+        $races = Race::where(['meet_id' => $meetId, 'event' => $eventId])->with('athletes')->with('teams')->get();
         $return = [];
 
         /* @var Race $race */
@@ -306,6 +306,7 @@ class MeetController extends Controller {
                         $athlete->pivot->lane,
                         $athlete->lastname . ', ' . $athlete->firstname,
                         $athlete->teams()->where(['current' => 1])->first()->abbr,
+                        '&nbsp;',
                         !empty($athlete->pivot->result) ? $athlete->pivot->result : '&nbsp;',
                         '&nbsp;',
                     ];
@@ -320,6 +321,7 @@ class MeetController extends Controller {
                         $team->pivot->lane,
                         $team->name,
                         $team->abbr,
+                        '&nbsp;',
                         !empty($team->pivot->result) ? $team->pivot->result : '&nbsp;',
                         '&nbsp;',
                     ];
