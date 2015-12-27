@@ -20,10 +20,15 @@ class DropBoxController extends Controller {
      */
 	public function notify(Request $request)
 	{
+        $dropboxSign = $request->header('X-Dropbox-Signature');
+        if ($dropboxSign !== hash_hmac('sha256', '', env('DROPBOX_KEY'))) {
+            throw new \RuntimeException('Attempted Dropbox API access did not validate signature.');
+        }
+
         // For Challenge setup
-        $challenge = Input::get('challenge');
-        echo $challenge;
-        return;
+//        $challenge = Input::get('challenge');
+//        echo $challenge;
+//        exit();
 
 		Log::debug($request);
 
