@@ -225,5 +225,6 @@ return [
 		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
 		'Socialite' => 'Laravel\Socialite\Facades\Socialite',
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
+		'LaravelPusher'	=> Vinkla\Pusher\Facades\Pusher::class,
 	],
 ];

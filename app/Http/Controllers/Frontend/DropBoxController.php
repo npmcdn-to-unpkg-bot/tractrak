@@ -5,7 +5,7 @@ use Dropbox;
 use Illuminate\Http\Request;
 use Input;
 use Log;
-use Pusher;
+use LaravelPusher;
 use Session;
 use Socialite;
 use URL;
@@ -39,7 +39,7 @@ class DropBoxController extends Controller {
         // TODO: Can the data be included in the message?
         $message = 'update';
 
-		Pusher::trigger("meet-$meetId", 'update-event', ['message' => $message]);
+        LaravelPusher::trigger("meet-$meetId", 'update-event', ['message' => $message]);
 	}
 
 }
