@@ -36,6 +36,7 @@ class DropBoxController extends Controller {
             $user = User::where(['dropboxId' => $userId])->firstOrFail();
             $meetId = $user->activeMeet;
 
+            Log::debug('User accessToken: ' . $user->accessToken);
             // Get the Delta from Dropbox
             $dropboxUser = new Dropbox\Client($user->accessToken, 'TracTrak/0.1');
 
