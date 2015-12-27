@@ -14,14 +14,15 @@ use URL;
 /**
  * Class DropboxController
  */
-class DropBoxController extends Controller {
+class DropBoxController extends Controller
+{
 
     /**
      * This is the incoming notification from DropBox that something happened
      * @param Request $request
      */
-	public function notify(Request $request)
-	{
+    public function notify(Request $request)
+    {
 //        $dropboxSign = $request->header('X-Dropbox-Signature');
 //        if ($dropboxSign !== hash_hmac('sha256', '', env('DROPBOX_KEY'))) {
 //            throw new \RuntimeException('Attempted Dropbox API access did not validate signature.');
@@ -46,7 +47,13 @@ class DropBoxController extends Controller {
             Log::debug($delta);
 
             foreach ($delta['entries'] as $dropboxFile) {
-                $fd = fopen(storage_path() . $dropboxFile[0], "wb");
+                $filename = storage_path() . $dropboxFile[0];
+                $dirname = dirname($filename);
+                if (!is_dir($dirname)) {
+                    mkdir($dirname, 0750, true);
+                }
+
+                $fd = fopen($filename, "wb");
                 $metadata = $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
@@ -66,7 +73,7 @@ class DropBoxController extends Controller {
             $user->cursor = $newCursor;
             $user->save();
         }
-	}
+    }
 
     /**
      * This is the challenge setup
