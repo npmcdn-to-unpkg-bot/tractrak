@@ -35,14 +35,21 @@ class DropBoxController extends Controller {
             // Find the User and the ActiveMeet
             $user = User::where(['dropboxId' => $userId])->firstOrFail();
             $meetId = $user->activeMeet;
+            $cursor = $user->cursor;
 
             Log::debug('User accessToken: ' . $user->accessToken);
             // Get the Delta from Dropbox
             $dropboxUser = new Dropbox\Client($user->accessToken, 'TracTrak/0.1');
 
-            $delta = $dropboxUser->getDelta();
+            $delta = $dropboxUser->getDelta($cursor);
             Log::debug('User delta:');
             Log::debug($delta);
+
+            $newCursor = $delta['cursor'];
+            Log::debug($newCursor);
+
+            $user->cursor = $newCursor;
+            $user->save();
 
             // TODO: Can the data be included in the message?
             $message = 'update';
