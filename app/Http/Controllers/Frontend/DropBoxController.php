@@ -53,7 +53,8 @@ class DropBoxController extends Controller
             foreach ($delta['entries'] as $dropboxFile) {
                 if ($dropboxFile[1] === null) {
                     //The file was deleted, so ignore
-                    Log::debug($dropboxFile[0] . ' was deleted.');
+//                    Log::debug($dropboxFile[0] . ' was deleted.');
+                    continue;
                 }
                 $filename = storage_path() . $dropboxFile[0];
                 $dirname = dirname($filename);
@@ -65,7 +66,7 @@ class DropBoxController extends Controller
                 $metadata = $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
-                $this->lifFile($fd);
+                $this->lifFile($filename);
 
                 fclose($fd);
 
