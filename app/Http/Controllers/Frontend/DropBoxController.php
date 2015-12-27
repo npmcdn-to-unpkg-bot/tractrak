@@ -25,11 +25,6 @@ class DropBoxController extends Controller {
 //            throw new \RuntimeException('Attempted Dropbox API access did not validate signature.');
 //        }
 
-        // For Challenge setup
-//        $challenge = Input::get('challenge');
-//        echo $challenge;
-//        exit();
-
 		Log::debug($request);
 
 
@@ -39,7 +34,17 @@ class DropBoxController extends Controller {
         // TODO: Can the data be included in the message?
         $message = 'update';
 
-        LaravelPusher::trigger("meet-$meetId", 'update-event', ['message' => $message]);
+        LaravelPusher::trigger(["meet-$meetId"], 'update-event', ['message' => $message]);
 	}
 
+    /**
+     * This is the challenge setup
+     */
+    public function challenge(Request $request)
+    {
+        // For Challenge setup
+        $challenge = Input::get('challenge');
+        echo $challenge;
+        exit();
+    }
 }
