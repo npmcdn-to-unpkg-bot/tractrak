@@ -32,7 +32,7 @@ class DropBoxController extends Controller {
 
         $userIds = $delta['users'];
         foreach ($userIds as $userId) {
-            $user = User::firstOrFail(['dropboxId' => $userId]);
+            $user = User::where(['dropboxId' => $userId])->firstOrFail();
             $meetId = $user->activeMeet;
 
             // TODO: Can the data be included in the message?
