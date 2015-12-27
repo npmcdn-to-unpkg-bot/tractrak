@@ -74,7 +74,11 @@
 
 @section('after-scripts-end')
     <script src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script src="//js.pusher.com/3.0/pusher.min.js"></script>
     <script>
+        Pusher.log = function(msg) {
+            console.log(msg);
+        };
         $(document).ready(function () {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
@@ -82,6 +86,9 @@
 
             $('table.table').DataTable();
         });
+
+        var pusher = new Pusher("{{env("PUSHER_KEY")}}")
+        var channel = pusher.subscribe('meet-{{ $meet->id }}');
     </script>
 @stop
 

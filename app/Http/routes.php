@@ -38,18 +38,6 @@ $router->group(['namespace' => 'Backend'], function () use ($router)
 	});
 });
 
-use Illuminate\Support\Facades\App;
-
-get('/bridge', function() {
-    $pusher = App::make('pusher');
-
-    $pusher->trigger( 'test-channel',
-                      'test-event', 
-                      array('text' => 'TracTrak is FAST!'));
-
-    return view('welcome');
-});
-
 get('api/upcoming-meets', function() {
     $meets = Meet::latest()->take(5)->get();
 

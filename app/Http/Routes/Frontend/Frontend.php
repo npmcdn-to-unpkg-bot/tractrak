@@ -10,6 +10,7 @@ get('meet/{id}', 'MeetController@live')->name('frontend.meet.live');
 
 get('/api/meet-event/{meetId}/{eventId}', 'MeetController@event');
 get('/api/dropbox', 'DropBoxController@notify');
+get('/api/dropbox', 'DropBoxController@notify');
 
 /**
  * These frontend controllers require the user to be logged in
