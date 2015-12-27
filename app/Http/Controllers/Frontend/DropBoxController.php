@@ -27,7 +27,7 @@ class DropBoxController extends Controller {
 //            throw new \RuntimeException('Attempted Dropbox API access did not validate signature.');
 //        }
 
-		Log::debug($request);
+//		Log::debug($request);
 
         $delta = Input::get('delta');
         $userIds = $delta['users'];
@@ -37,24 +37,34 @@ class DropBoxController extends Controller {
             $meetId = $user->activeMeet;
             $cursor = $user->cursor;
 
-            Log::debug('User accessToken: ' . $user->accessToken);
+//            Log::debug('User accessToken: ' . $user->accessToken);
             // Get the Delta from Dropbox
             $dropboxUser = new Dropbox\Client($user->accessToken, 'TracTrak/0.1');
 
             $delta = $dropboxUser->getDelta($cursor);
-            Log::debug('User delta:');
+//            Log::debug('User delta:');
             Log::debug($delta);
 
+            foreach ($delta['entires'] as $dropboxFile) {
+                $fd = fopen(storage_path() . DIRECTORY_SEPARATOR , $dropboxFile[0], "wb");
+                $metadata = $dropboxUser->getFile($dropboxFile[0], $fd);
+
+                // process the file for data
+
+                fclose($fd);
+
+                // send notice now
+                // TODO: Can the data be included in the message?
+                $data = 'update';
+
+                LaravelPusher::trigger(["meet-$meetId"], 'update', ['data' => $data]);
+            }
+
             $newCursor = $delta['cursor'];
-            Log::debug($newCursor);
+//            Log::debug($newCursor);
 
             $user->cursor = $newCursor;
             $user->save();
-
-            // TODO: Can the data be included in the message?
-            $message = 'update';
-
-            LaravelPusher::trigger(["meet-$meetId"], 'update-event', ['message' => $message]);
         }
 	}
 
