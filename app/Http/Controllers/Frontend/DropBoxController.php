@@ -17,6 +17,7 @@ class DropBoxController extends Controller {
 
     /**
      * This is the incoming notification from DropBox that something happened
+     * @param Request $request
      */
 	public function notify(Request $request)
 	{
@@ -26,15 +27,18 @@ class DropBoxController extends Controller {
 //        }
 
 		Log::debug($request);
+        $delta = Input::get('delta');
 
+        $userIds = $delta['users'];
+        foreach ($userIds as $userId) {
+            $user = User::firstOrFail(['dropboxId' => $userId]);
+            $meetId = $user->activeMeet;
 
-        // TODO: Fix this
-        $meetId = 1;
+            // TODO: Can the data be included in the message?
+            $message = 'update';
 
-        // TODO: Can the data be included in the message?
-        $message = 'update';
-
-        LaravelPusher::trigger(["meet-$meetId"], 'update-event', ['message' => $message]);
+            LaravelPusher::trigger(["meet-$meetId"], 'update-event', ['message' => $message]);
+        }
 	}
 
     /**
