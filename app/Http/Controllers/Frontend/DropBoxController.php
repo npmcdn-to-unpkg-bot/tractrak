@@ -46,7 +46,7 @@ class DropBoxController extends Controller {
             Log::debug($delta);
 
             foreach ($delta['entries'] as $dropboxFile) {
-                $fd = fopen(storage_path() . DIRECTORY_SEPARATOR , $dropboxFile[0], "wb");
+                $fd = fopen(storage_path() . DIRECTORY_SEPARATOR . $dropboxFile[0], "wb");
                 $metadata = $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
