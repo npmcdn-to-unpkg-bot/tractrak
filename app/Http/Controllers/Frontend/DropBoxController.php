@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Access\User\User;
 use Dropbox;
 use Illuminate\Http\Request;
 use Input;
