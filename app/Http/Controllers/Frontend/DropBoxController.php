@@ -37,7 +37,7 @@ class DropBoxController extends Controller {
             $meetId = $user->activeMeet;
 
             // Get the Delta from Dropbox
-            $dropboxUser = Dropbox\Client($user->accessToken, 'TracTrak/0.1');
+            $dropboxUser = new Dropbox\Client($user->accessToken, 'TracTrak/0.1');
 
             $delta = $dropboxUser->getDelta();
             Log::debug('User delta:');
