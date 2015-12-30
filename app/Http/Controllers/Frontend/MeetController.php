@@ -286,7 +286,7 @@ class MeetController extends Controller {
      * TODO Tune/eager load queries, since this will get hit, A LOT
      * @param $meetId
      * @param $eventId
-     * @return array (This is Laravel automatically converted to JSON)
+     * @return array (This Laravel automatically converts to JSON)
      */
     public function event($meetId, $eventId)
     {

@@ -7,6 +7,7 @@ use App\Models\Race;
 use App\Models\Team;
 use Ddeboer\DataImport\Reader\CsvReader;
 use Dropbox;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Input;
 use Log;
@@ -63,10 +64,10 @@ class DropBoxController extends Controller
                 }
 
                 $fd = fopen($filename, "wb");
-                $metadata = $dropboxUser->getFile($dropboxFile[0], $fd);
+                $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
-                $this->lifFile($filename);
+                $eventId = $this->lifFile($filename);
 
                 fclose($fd);
 
@@ -74,7 +75,7 @@ class DropBoxController extends Controller
                 // TODO: Can the data be included in the message?
                 $data = 'update';
 
-                LaravelPusher::trigger(["meet-$meetId"], 'update', ['data' => $data]);
+                LaravelPusher::trigger(["meet-$meetId"], 'update', ['data' => ['event' => $eventId]]);
             }
 
             $newCursor = $delta['cursor'];
@@ -104,55 +105,99 @@ class DropBoxController extends Controller
         $file = new \SplFileObject($file);
         $reader = new CsvReader($file);
         $rowCounter = 0;
+        try {
+            foreach ($reader as $row) {
+                ++$rowCounter;
 
-        foreach ($reader as $row) {
-            ++$rowCounter;
+                if ($rowCounter === 1) {
+                    // $row will be an array containing the comma-separated elements of the line:
+                    // array(
+                    //   0 => eventId,
+                    //   1 => round
+                    //   2 => heat
+                    //   3 => name
+                    //   4 =>
+                    //   9 => distance?
+                    //   10 => Time of day (local) started
+                    // )
+                    $eventId = $row[0];
+                    $roundId = $row[1];
+                    $heatId = $row[2];
 
-            if ($rowCounter === 1) {
-                // $row will be an array containing the comma-separated elements of the line:
-                // array(
-                //   0 => eventId,
-                //   1 => round
-                //   2 => heat
-                //   3 => name
-                //   4 =>
-                //   9 => distance?
-                //   10 => Time of day (local) started
-                // )
-            } else {
-                // $row will be an array containing the comma-separated elements of the line:
-                // array(
-                //   0 => place,
-                //   1 => athleteId,
-                //   2 => LastName
-                //   3 => FirstName
-                //   4 => Team
-                //   5 => time
-                //   5 => ?
-                //   6 => delta time from previous position
-                //   7 => ?
-                //   8 => ?
-                //   9 => time of day (local) started
-                //   10 => gender?
-                //   11 => Races (one is int, two is csv list in quotes ")
-                //   12 => ?
-                //   13 => delta time from previous position?
-                //   13 => delta time from previous position?
-                // )
+                    /** @var Race $race */
+                    $race = Race::where([
+                        'event' => $eventId,
+                        'round' => $roundId,
+                        'heat' => $heatId,
+                    ])->firstOrFail();
 
-                $gender = $row[10] === 'M' ? 0 : 1;
-                /** @var Athlete $athlete */
-                $athlete = Athlete::firstOrCreate(['firstname' => $row[3], 'lastname' => $row[2], 'gender' => $gender]);
+                    $race->start = $row[10];
+                    $race->save();
+                } else {
+                    if (empty($row[1])) {
+                        // Team event
+                        // $row will be an array containing the comma-separated elements of the line:
+                        // array(
+                        //   0 => place
+                        //   1 => (blank) - this implies it's a team event
+                        //   2 => lane
+                        //   3 => Team name
+                        //   4 => ?
+                        //   5 => team abbreviation
+                        //   6 => time
+                        //   7 => ?
+                        //   8 => delta time from previous position
+                        //   9 => ?
+                        //   10 => ?
+                        //   11 => time of day (local) started
+                        //   12 => ?
+                        //   13 => ?
+                        //   14 => ?
+                        //   15 => delta time from previous position?
+                        //   16 => delta time from previous position?
+                        // )
 
-                /** @var Team $team */
-                $team = Team::firstOrCreate(['name' => $row[4]]);
+                        /** @var Team $team */
+                        $team = Team::where(['name' => $row[3]])->firstOrFail();
 
-                $athlete->teams()->attach([$team->id => ['current' => true]]);
+                        $race->teams()->updateExistingPivot($team->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $row[0]]);
+                    } else {
+                        // Athlete event
+                        // $row will be an array containing the comma-separated elements of the line:
+                        // array(
+                        //   0 => place
+                        //   1 => athleteId
+                        //   2 => lane
+                        //   3 => LastName
+                        //   4 => FirstName
+                        //   5 => Team
+                        //   6 => time
+                        //   7 => ?
+                        //   8 => delta time from previous position
+                        //   9 => ?
+                        //   10 => ?
+                        //   11 => time of day (local) started
+                        //   12 => gender?
+                        //   13 => Races (one is int, two is csv list in quotes ")
+                        //   14 => ?
+                        //   15 => delta time from previous position?
+                        //   16 => delta time from previous position?
+                        // )
 
-                $race = Race::where()->first();
+                        $gender = $row[12] === 'M' ? 0 : 1;
+                        /** @var Athlete $athlete */
+                        $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender])->firstOrFail();
+
+                        $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $row[0]]);
+                    }
+                }
             }
+            unset($localFile);
         }
-        unset($localFile);
-    }
+    catch (ModelNotFoundException $e) {
+Log::debug($e);
+}
+        return $eventId;
+}
 
 }

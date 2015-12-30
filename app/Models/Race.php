@@ -56,12 +56,12 @@ class Race extends Model {
 
     public function athletes()
     {
-        return $this->morphedByMany('App\Models\Athlete', 'competitor')->withPivot('lane', 'result');
+        return $this->morphedByMany('App\Models\Athlete', 'competitor')->withPivot('lane', 'result', 'place', 'overall');
     }
 
 
     public function teams()
     {
-        return $this->morphedByMany('App\Models\Team', 'competitor')->withPivot('lane', 'result');
+        return $this->morphedByMany('App\Models\Team', 'competitor')->withPivot('lane', 'result', 'place', 'overall');
     }
 }

@@ -81,14 +81,25 @@
         };
         $(document).ready(function () {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var $target = $(e.target);
+                console.log($target);
+                var $event = $target.data();
                 $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
             });
 
             $('table.table').DataTable();
         });
 
-        var pusher = new Pusher("{{env("PUSHER_KEY")}}")
+        var pusher = new Pusher("{{env("PUSHER_KEY")}}");
         var channel = pusher.subscribe('meet-{{ $meet->id }}');
+        channel.bind('update', function(data) {
+            var eventId = data['event'];
+            console.log(data);
+            console.log(data[0]);
+            console.log(eventId);
+            console.log("#event-table-" + eventId);
+            $("#event-table-" + eventId).DataTable().ajax.reload();
+        });
     </script>
 @stop
 
