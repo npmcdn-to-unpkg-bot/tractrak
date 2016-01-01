@@ -16,8 +16,12 @@
                     @foreach ( $meet->races()->orderBy('schedule')->groupBy('event')->get() as $race )
                         <li role="presentation"@if ($race->schedule === 1) class="active"@endif>
                             <a class="panel-title collapsed" role="tab" data-toggle="tab"
-                               data-ajax="/api/meet-event/{{ $meet->id }}/{{ $race->event }}"
-                               href="#event-{{ $race->event }}">{{ $race->type()->first()->name }}</a>
+                               data-event="{{ $race->event }}" href="#event-{{ $race->event }}">
+                                {{ $race->type()->first()->name }}
+                                <span class="hide update-icon" id="updated-icon-{{$race->event}}">
+                                    <i class="fa fa-star"></i>
+                                </span>
+                            </a>
                         </li>
                     @endforeach
                 </ul>
@@ -66,7 +70,6 @@
                         </div>
                     @endforeach
                 </div>
-
             </div>
         </div>
     </div>
@@ -76,15 +79,13 @@
     <script src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
     <script src="//js.pusher.com/3.0/pusher.min.js"></script>
     <script>
-        Pusher.log = function(msg) {
-            console.log(msg);
-        };
         $(document).ready(function () {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var $target = $(e.target);
-                console.log($target);
-                var $event = $target.data();
+                var event = $target.data();
+                console.log(event['event']);
                 $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+                $('#updated-icon-' + event['event']).addClass('hide');
             });
 
             $('table.table').DataTable();
@@ -93,12 +94,9 @@
         var pusher = new Pusher("{{env("PUSHER_KEY")}}");
         var channel = pusher.subscribe('meet-{{ $meet->id }}');
         channel.bind('update', function(data) {
-            var eventId = data['event'];
-            console.log(data);
-            console.log(data[0]);
-            console.log(eventId);
-            console.log("#event-table-" + eventId);
-            $("#event-table-" + eventId).DataTable().ajax.reload();
+            var eventId = data['data']['event'];
+            $('#event-table-' + eventId).DataTable().ajax.reload();
+            $('#updated-icon-' + eventId).removeClass('hide');
         });
     </script>
 @stop
