@@ -13,7 +13,9 @@
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li>{!! link_to('/', 'Home') !!}</li>
+					<li>{!! link_to('/about', 'About') !!}</li>
+					<li>{!! link_to('/requirements', 'Requirements') !!}</li>
+					<li>{!! link_to('/contact', 'Contact') !!}</li>
 					{{--<li>{!! link_to('/news', 'News') !!}</li>--}}
 				</ul>
 

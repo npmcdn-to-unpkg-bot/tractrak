@@ -32,7 +32,7 @@ class Meet extends Model {
 	 *
 	 * @var array
 	 */
-	protected $dates = ['deleted_at'];
+	protected $dates = ['deleted_at', 'meet_date'];
 
     /*
      * The user owner of this meet
@@ -40,6 +40,14 @@ class Meet extends Model {
     public function owner()
     {
         return $this->hasOne(User::class, 'id', 'owner_id');
+    }
+
+    /*
+     * The stadium the meet occurs at
+     */
+    public function stadium()
+    {
+        return $this->hasOne(Stadium::class, 'id', 'stadium_id');
     }
 
     /**
@@ -53,6 +61,17 @@ class Meet extends Model {
     public function isPaid()
     {
         return $this->paid === 1;
+    }
+
+    /**
+     * Is the meet ready? Is there a schedule? Did they pay?
+     * @return bool
+     */
+    public function ready()
+    {
+        // TODO Uncomment once paying turned on
+//        return ($this->paid === 1 && $this->sch === 1);
+        return $this->sch === 1;
     }
 
     /*

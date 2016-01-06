@@ -1,6 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('content')
+    <div class="alert alert-info" role="alert">Currently, registration is only needed to run TracTrak at a meet. You will never need to register to see meet results.</div>
 	<div class="row">
 
 		<div class="col-md-8 col-md-offset-2">

@@ -193,11 +193,9 @@ class DropBoxController extends Controller
                 }
             }
             unset($localFile);
+        } catch (ModelNotFoundException $e) {
+            Log::debug($e);
         }
-    catch (ModelNotFoundException $e) {
-Log::debug($e);
-}
         return $eventId;
-}
-
+    }
 }
