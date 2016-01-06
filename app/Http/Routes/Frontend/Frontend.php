@@ -9,9 +9,14 @@ get('/requirements', 'FrontendController@requirements')->name('requirements');
 get('/contact', 'FrontendController@contact')->name('contact');
 get('macros', 'FrontendController@macros');
 
-get('meet/{id}', 'MeetController@live')->name('frontend.meet.live');
+get('meet/{id}', 'MeetController@live')->name('frontend.meet.live')->where(['id' => '[0-9]+']);
 
-get('/api/meet-event/{meetId}/{eventId}', 'MeetController@event');
+get('/api/meet-event/{meetId}/{eventId}/{roundId?}/{heatId?}', 'MeetController@event')->where([
+        'meedId' => '[0-9]+',
+        'eventId' => '[0-9]+',
+        'roundId' => '[0-9]+',
+        'heatId' => '[0-9]+',
+    ]);
 get('/api/dropbox', 'DropBoxController@challenge');
 post('/api/dropbox', 'DropBoxController@notify');
 

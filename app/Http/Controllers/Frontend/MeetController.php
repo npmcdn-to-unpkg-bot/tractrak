@@ -12,9 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Input;
 use Mockery\Exception\RuntimeException;
-use URL;
 use Ddeboer\DataImport\Reader\CsvReader;
-use Session;
 use Socialite;
 
 /**
@@ -325,13 +323,81 @@ class MeetController extends Controller
 
     /**
      * TODO Tune/eager load queries, since this will get hit, A LOT
-     * @param $meetId
-     * @param $eventId
+     * @param integer $meetId
+     * @param integer $eventId
+     * @param integer $roundId
+     * @param integer $heatId
      * @return array (This Laravel automatically converts to JSON)
      */
-    public function event($meetId, $eventId)
+    public function event($meetId, $eventId, $roundId = null, $heatId = null)
     {
-        $races = Race::where(['meet_id' => $meetId, 'event' => $eventId])->with('athletes')->with('teams')->get();
+        $where = ['meet_id' => $meetId, 'event' => $eventId];
+        if (!is_null($roundId)) {
+            $where['round'] = $roundId;
+        }
+        if (!is_null($heatId)) {
+            $where['heat'] = $heatId;
+        }
+
+        $races = Race::where($where)->with('athletes')->with('teams')->get();
+        $return = [];
+
+        /* @var Race $race */
+        foreach ($races as $race) {
+//            \Debugbar::info($race);
+            if ($race->isAthleteRace()) {
+                $athletes = $race->athletes()->get();
+//                \Debugbar::info($athletes);
+                foreach ($athletes as $athlete) {
+                    $return[] = [
+                        $race->round,
+                        $race->heat,
+                        $athlete->pivot->lane,
+                        $athlete->lastname . ', ' . $athlete->firstname,
+                        $athlete->teams()->where(['current' => 1])->first()->abbr,
+                        $athlete->pivot->place,
+                        !empty($athlete->pivot->result) ? $athlete->pivot->result : '&nbsp;',
+                        '&nbsp;',
+                    ];
+                }
+            } else {
+                $teams = $race->teams()->get();
+//                \Debugbar::info($teams);
+                foreach ($teams as $team) {
+                    $return[] = [
+                        $race->round,
+                        $race->heat,
+                        $team->pivot->lane,
+                        $team->name,
+                        $team->abbr,
+                        $team->pivot->place,
+                        !empty($team->pivot->result) ? $team->pivot->result : '&nbsp;',
+                        '&nbsp;',
+                    ];
+                }
+            }
+        }
+
+        return ['data' => $return];
+    }
+
+    /**
+     * TODO Tune/eager load queries, since this will get hit, A LOT
+     * @param integer $meetId
+     * @param integer $eventId
+     * @param integer $roundId
+     * @param integer $heatId
+     * @return array (This Laravel automatically converts to JSON)
+     */
+    public function eventRoundHeat($meetId, $eventId, $roundId, $heatId)
+    {
+        $races = Race::where([
+            'meet_id' => $meetId,
+            'event' => $eventId,
+            'round' => $roundId,
+            'heat' => $heatId,
+        ])->with('athletes')->with('teams')->get();
+
         $return = [];
 
         /* @var Race $race */
