@@ -1,110 +1,124 @@
 @extends('frontend.layouts.master')
 
+@section('title')
+{{  app_name() }} | {{ $meet->name }}
+@if ($meet->sponsor)
+ | {{ $meet->sponsor }}
+@endif
+ | {{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}
+@endsection
+
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-10 col-md-offset-2">
+            <div class="col-xs-12 text-center">
                 <div class="center-block">
                     <h1>{{ $meet->name }}</h1>
+                    @if ($meet->sponsor)
+                        <h2>{{ $meet->sponsor }}</h2>
+                    @endif
                     <h3>{{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}</h3>
+
                     <h3>{{ $meet->meet_date->format('l, F d, Y, g:ia') }}</h3>
                 </div>
             </div>
         </div>
         @if ($meet->ready())
-            <div class="row">
-                <div class="col-md-2" role="navigation">
-                    <ul class="nav nav-pills nav-stacked">
-                        @foreach ( $meet->races()->orderBy('schedule')->groupBy('event')->get() as $race )
-                            <li role="presentation"@if ($race->schedule === 1) class="active"@endif>
-                                <a class="panel-title collapsed" role="tab" data-toggle="tab"
-                                   data-event="{{ $race->event }}" href="#event-{{ $race->event }}">
-                                    {{ $race->type()->first()->name }}
-                                    <span class="hide update-icon" id="updated-icon-{{$race->event}}">
-                                        <i class="fa fa-star"></i>
-                                    </span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <div class="col-md-10">
-                    <div class="alert alert-success alert-dismissable hide">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <h4>Alert!</h4>
-                        <strong>Warning!</strong>
-                        Best check yo self, you're not looking too good. <a href="#" class="alert-link">alert link</a>
-                    </div>
-
-                    <div class="tab-content">
-                        @foreach ( $meet->races()->orderBy('schedule')->groupBy('event')->get() as $race )
-                            <div role="tabpanel" class="tab-pane @if ($race->schedule === 1) active @endif" id="event-{{ $race->event }}">
-                                <h2>{{ $race->type()->first()->name }}</h2>
-                                <table id="event-table-{{ $race->event }}" class="table table-responsive display"
-                                       data-ajax="/api/meet-event/{{ $meet->id }}/{{ $race->event }}"
-                                       cellspacing="0" width="100%">
-                                    <thead>
-                                    <tr>
-                                        <th>Round</th>
-                                        <th>Heat</th>
-                                        <th>Lane</th>
-                                        <th>Name</th>
-                                        <th>Team</th>
-                                        <th>Position</th>
-                                        <th>Time</th>
-                                        <th>Wind</th>
-                                    </tr>
-                                    </thead>
-                                    <tfoot>
-                                    <tr>
-                                        <th>Round</th>
-                                        <th>Heat</th>
-                                        <th>Lane</th>
-                                        <th>Name</th>
-                                        <th>Team</th>
-                                        <th>Position</th>
-                                        <th>Time</th>
-                                        <th>Wind</th>
-                                    </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        @endforeach
-                    </div>
+            <div class="row" id="vue">
+                <div>
+                    <events-event :meet="{{$meet->id}}"></events-event>
                 </div>
             </div>
+
+            <template id="event-template">
+                <div class="col-sm-3" role="navigation">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li role="presentation" v-for="event in events" :class="{ 'active': !$index }">
+                            <a class="panel-title collapsed" role="tab" data-toggle="tab"
+                               data-event="@{{ event.id }}" href="#event-@{{ event.id }}">
+                                @{{ event.name }}
+                                <span class="hide update-icon" id="updated-icon-@{{ event.id }}">
+                                    <i class="fa fa-star"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-9">
+                    <div class="tab-content">
+                        <div role="tabpanel"  :class="{ 'tab-pane': true, 'active': !$index }" v-for="event in events" id="event-@{{ event.id }}">
+                            <h2>@{{ event.name }}</h2>
+
+                            <div v-for="round in event.round">
+                                <h3>Round @{{ round.id }}</h3>
+
+                                <div v-for="heat in round.heat">
+                                    <h4>Heat @{{ heat.id }}</h4>
+                                    <h4 v-if="heat.wind">Wind @{{{ heat.wind }}}</h4>
+                                    <table id="event-table-@{{ event.id }}-@{{ round.id }}-@{{ heat.id }}"
+                                           class="table table-responsive table-striped table-hover table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th>Lane</th>
+                                            <th>Name</th>
+                                            <th>Team</th>
+                                            <th>Position</th>
+                                            <th>Time</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="lane in heat.lane | orderBy 'result'" :class="{
+                                        'success': lane.place == 1,
+                                        'danger':  lane.place == 'DQ',
+                                        'info':    lane.place == 'SCR' || lane.place == 'DNS',
+                                        'warning': lane.place == 'DNF'
+                                         }">
+                                            <td>@{{ lane.lane }}</td>
+                                            <td>@{{ lane.name }}</td>
+                                            <td>@{{ lane.teamAbbr }}</td>
+                                            <td>@{{ lane.place }}</td>
+                                            <td>@{{ lane.result }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
         @else
-            <div class="alert alert-info" role="alert">We're glad you're pumped for the meet. It's not quite ready yet. Please check back closer to the start time listed above.</div>
+            <div class="alert alert-info" role="alert">We're glad you're pumped for the meet. It's not quite ready yet.
+                Please check back closer to the start time listed above.
+            </div>
         @endif
     </div>
 @endsection
 
 @section('after-scripts-end')
-    <script src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/1.0.13/vue.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue-resource/0.6.0/vue-resource.min.js"></script>
     <script src="//js.pusher.com/3.0/pusher.min.js"></script>
+    <script src="/js/meet.js"></script>
     <script>
         $(document).ready(function () {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var $target = $(e.target);
                 var event = $target.data();
-                //$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
                 $('#updated-icon-' + event['event']).addClass('hide');
             });
 
-            $('table.table').DataTable();
         });
 
         var pusher = new Pusher("{{env("PUSHER_KEY")}}");
         var channel = pusher.subscribe('meet-{{ $meet->id }}');
-        channel.bind('update', function(data) {
+        channel.bind('update', function (data) {
+            console.log('Ooooh, an update!');
+            console.log(data);
             var eventId = data['data']['event'];
-            $('#event-table-' + eventId).DataTable().ajax.reload();
-            $('#updated-icon-' + eventId).removeClass('hide');
+            var roundId = data['data']['round'];
+            vm.update(eventId, roundId);
+            $('#updated-icon-' + eventId).addClass('hide');
         });
     </script>
-@stop
-
-@section('after-styles-end')
-    <link href="//cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
 @stop

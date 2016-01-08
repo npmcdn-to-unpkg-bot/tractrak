@@ -7,13 +7,16 @@ use App\Models\Race;
 use App\Models\RaceType;
 use App\Models\Stadium;
 use App\Models\Team;
+use Debugbar;
 use Dropbox;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Input;
+use Log;
 use Mockery\Exception\RuntimeException;
 use Ddeboer\DataImport\Reader\CsvReader;
 use Socialite;
+use Response;
 
 /**
  * Class MeetController
@@ -321,17 +324,50 @@ class MeetController extends Controller
             ->with(['meet' => $meet]);
     }
 
+
+    public function viewEvent(Request $request, $meetId, $eventId, $roundId = null, $heatId = null)
+    {
+        $return = $this->event($request, $meetId, $eventId, $roundId, $heatId);
+
+        return view('frontend.meet.apiView')
+            ->withUser(auth()->user())
+            ->with(['data' => $return]);
+    }
+
+    /**
+     * Return the event IDs for provided meet
+     * @param Request $request
+     * @param integer $meetId
+     * @return Response
+     */
+    public function meet(Request $request, $meetId)
+    {
+        $races = Race::distinct('event')->groupby('event')->where(['meet_id' => $meetId])->get();
+        $return = [];
+
+        /* @var Race $race */
+        foreach ($races as $race) {
+            $return[] = $race->event;
+        }
+
+        return response()->json(['events' => $return])->setCallback($request->input('callback'));
+    }
+
     /**
      * TODO Tune/eager load queries, since this will get hit, A LOT
+     * @param Request $request
      * @param integer $meetId
      * @param integer $eventId
-     * @param integer $roundId
-     * @param integer $heatId
-     * @return array (This Laravel automatically converts to JSON)
+     * @param integer $roundId = null
+     * @param integer $heatId = null
+     * @return Response
      */
-    public function event($meetId, $eventId, $roundId = null, $heatId = null)
+    public function event(Request $request, $meetId, $eventId, $roundId = null, $heatId = null)
     {
-        $where = ['meet_id' => $meetId, 'event' => $eventId];
+        $where = ['meet_id' => $meetId];
+        if (!is_null($eventId)) {
+            $where['event'] = $eventId;
+        }
         if (!is_null($roundId)) {
             $where['round'] = $roundId;
         }
@@ -339,103 +375,65 @@ class MeetController extends Controller
             $where['heat'] = $heatId;
         }
 
-        $races = Race::where($where)->with('athletes')->with('teams')->get();
+        $races = Race::where($where)->with('athletes', 'teams', 'type', 'athletes.teams')->get();
         $return = [];
 
         /* @var Race $race */
         foreach ($races as $race) {
-//            \Debugbar::info($race);
+            if (!array_key_exists($race->event, $return)) {
+                $return[$race->event] = [
+                    'name' => $race->type->name,
+                    'id' => $race->event,
+                    'round' => [],
+                ];
+            }
+            if (!array_key_exists($race->round, $return[$race->event]['round'])) {
+                $return[$race->event]['round'][$race->round] = [
+                    'id' => $race->round,
+                    'heat' => [],
+                ];
+            }
+            if (!array_key_exists($race->heat, $return[$race->event]['round'][$race->round]['heat'])) {
+                $return[$race->event]['round'][$race->round]['heat'][$race->heat] = [
+                    'id' => $race->heat,
+                    'wind' => '',
+                    'lane' => [],
+                ];
+            }
+
             if ($race->isAthleteRace()) {
-                $athletes = $race->athletes()->get();
-//                \Debugbar::info($athletes);
-                foreach ($athletes as $athlete) {
-                    $return[] = [
-                        $race->round,
-                        $race->heat,
-                        $athlete->pivot->lane,
-                        $athlete->lastname . ', ' . $athlete->firstname,
-                        $athlete->teams()->where(['current' => 1])->first()->abbr,
-                        $athlete->pivot->place,
-                        !empty($athlete->pivot->result) ? $athlete->pivot->result : '&nbsp;',
-                        '&nbsp;',
+                foreach ($race->athletes as $athlete) {
+                    $laneNumber = $athlete->pivot->lane;
+                    $lane = [
+                        'lane' => $laneNumber,
+                        'name' => $athlete->lastname . ', ' . $athlete->firstname,
+                        'teamAbbr' => $athlete->teams[0]['abbr'],
+                        'place' => !is_null($athlete->pivot->place) ? $athlete->pivot->place : '',
+                        'result' => !empty($athlete->pivot->result) ? $athlete->pivot->result : '',
                     ];
+                    $return[$race->event]['round'][$race->round]['heat'][$race->heat]['lane'] += [$laneNumber => $lane];
+                    if (!empty($athlete->pivot->wind)) {
+                        $return[$race->event]['round'][$race->round]['heat'][$race->heat]['wind'] = $athlete->pivot->wind;
+                    }
                 }
             } else {
-                $teams = $race->teams()->get();
-//                \Debugbar::info($teams);
-                foreach ($teams as $team) {
-                    $return[] = [
-                        $race->round,
-                        $race->heat,
-                        $team->pivot->lane,
-                        $team->name,
-                        $team->abbr,
-                        $team->pivot->place,
-                        !empty($team->pivot->result) ? $team->pivot->result : '&nbsp;',
-                        '&nbsp;',
+                foreach ($race->teams as $team) {
+                    $laneNumber = $team->pivot->lane;
+                    $lane = [
+                        'lane' => $laneNumber,
+                        'name' => $team->name,
+                        'teamAbbr' => $team->abbr,
+                        'place' => !is_null($team->pivot->place) ? $team->pivot->place : '',
+                        'result' => !empty($team->pivot->result) ? $team->pivot->result : '',
                     ];
+                    $return[$race->event]['round'][$race->round]['heat'][$race->heat]['lane'] += [$laneNumber => $lane];
+                    if (!empty($team->pivot->wind)) {
+                        $return[$race->event]['round'][$race->round]['heat'][$race->heat]['wind'] = $team->pivot->wind;
+                    }
                 }
             }
         }
 
-        return ['data' => $return];
-    }
-
-    /**
-     * TODO Tune/eager load queries, since this will get hit, A LOT
-     * @param integer $meetId
-     * @param integer $eventId
-     * @param integer $roundId
-     * @param integer $heatId
-     * @return array (This Laravel automatically converts to JSON)
-     */
-    public function eventRoundHeat($meetId, $eventId, $roundId, $heatId)
-    {
-        $races = Race::where([
-            'meet_id' => $meetId,
-            'event' => $eventId,
-            'round' => $roundId,
-            'heat' => $heatId,
-        ])->with('athletes')->with('teams')->get();
-
-        $return = [];
-
-        /* @var Race $race */
-        foreach ($races as $race) {
-//            \Debugbar::info($race);
-            if ($race->isAthleteRace()) {
-                $athletes = $race->athletes()->get();
-//                \Debugbar::info($athletes);
-                foreach ($athletes as $athlete) {
-                    $return[] = [
-                        $race->round,
-                        $race->heat,
-                        $athlete->pivot->lane,
-                        $athlete->lastname . ', ' . $athlete->firstname,
-                        $athlete->teams()->where(['current' => 1])->first()->abbr,
-                        $athlete->pivot->place,
-                        !empty($athlete->pivot->result) ? $athlete->pivot->result : '&nbsp;',
-                        '&nbsp;',
-                    ];
-                }
-            } else {
-                $teams = $race->teams()->get();
-//                \Debugbar::info($teams);
-                foreach ($teams as $team) {
-                    $return[] = [
-                        $race->round,
-                        $race->heat,
-                        $team->pivot->lane,
-                        $team->name,
-                        $team->abbr,
-                        $team->pivot->place,
-                        !empty($team->pivot->result) ? $team->pivot->result : '&nbsp;',
-                        '&nbsp;',
-                    ];
-                }
-            }
-        }
-
-        return ['data' => $return];
+        return response()->json($return)->setCallback($request->input('callback'));
     }
 }

@@ -1,5 +1,9 @@
 @extends('frontend.layouts.master')
 
+@section('title')
+    About | {{  app_name() }}
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-md-10 col-md-offset-1">

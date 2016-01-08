@@ -3,6 +3,7 @@
 use App\Http\Controllers\Controller;
 use App\Models\Access\User\User;
 use App\Models\Athlete;
+use App\Models\Meet;
 use App\Models\Race;
 use App\Models\Team;
 use Ddeboer\DataImport\Reader\CsvReader;
@@ -45,7 +46,7 @@ class DropBoxController extends Controller
 
 //            Log::debug('User accessToken: ' . $user->accessToken);
             // Get the Delta from Dropbox
-            $dropboxUser = new Dropbox\Client($user->accessToken, 'TracTrak/0.1');
+            $dropboxUser = new Dropbox\Client($user->accessToken, 'TracTrak/0.2');
 
             $delta = $dropboxUser->getDelta($cursor);
 //            Log::debug('User delta:');
@@ -67,15 +68,20 @@ class DropBoxController extends Controller
                 $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
-                $eventId = $this->lifFile($filename);
+                $eventRoundHeat = $this->lifFile($filename);
 
                 fclose($fd);
 
                 // send notice now
                 // TODO: Can the data be included in the message?
-                $data = 'update';
+                $data = (new MeetController())->event($request, $meetId, $eventRoundHeat['event'], $eventRoundHeat['round']);
 
-                LaravelPusher::trigger(["meet-$meetId"], 'update', ['data' => ['event' => $eventId]]);
+                LaravelPusher::trigger(["meet-$meetId"], 'update', ['data' => [
+                    'event' => $eventRoundHeat['event'],
+                    'round' => $eventRoundHeat['round'],
+                    'heat' => $eventRoundHeat['heat'],
+                    'data' => $data,
+                ]]);
             }
 
             $newCursor = $delta['cursor'];
@@ -99,6 +105,7 @@ class DropBoxController extends Controller
 
     /**
      * @param $file
+     * @return array
      */
     private function lifFile($file)
     {
@@ -160,7 +167,8 @@ class DropBoxController extends Controller
                         /** @var Team $team */
                         $team = Team::where(['name' => $row[3]])->firstOrFail();
 
-                        $race->teams()->updateExistingPivot($team->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $row[0]]);
+                        $place = isset($row[0]) ? $row[0] : null;
+                        $race->teams()->updateExistingPivot($team->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $place]);
                     } else {
                         // Athlete event
                         // $row will be an array containing the comma-separated elements of the line:
@@ -188,7 +196,8 @@ class DropBoxController extends Controller
                         /** @var Athlete $athlete */
                         $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender])->firstOrFail();
 
-                        $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $row[0]]);
+                        $place = isset($row[0]) ? $row[0] : null;
+                        $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $place]);
                     }
                 }
             }
@@ -196,6 +205,7 @@ class DropBoxController extends Controller
         } catch (ModelNotFoundException $e) {
             Log::debug($e);
         }
-        return $eventId;
+
+        return ['event' => $eventId, 'round' => $roundId, 'heat' => $heatId];
     }
 }
