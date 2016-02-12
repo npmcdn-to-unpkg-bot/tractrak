@@ -7,16 +7,14 @@ use App\Models\Race;
 use App\Models\RaceType;
 use App\Models\Stadium;
 use App\Models\Team;
+use Ddeboer\DataImport\Reader\CsvReader;
 use Debugbar;
 use Dropbox;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Input;
-use Log;
 use Mockery\Exception\RuntimeException;
-use Ddeboer\DataImport\Reader\CsvReader;
-use Socialite;
 use Response;
+use Socialite;
 
 /**
  * Class MeetController

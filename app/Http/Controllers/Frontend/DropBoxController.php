@@ -50,7 +50,7 @@ class DropBoxController extends Controller
 
             $delta = $dropboxUser->getDelta($cursor);
 //            Log::debug('User delta:');
-//            Log::debug($delta);
+            Log::debug($delta);
 
             foreach ($delta['entries'] as $dropboxFile) {
                 if ($dropboxFile[1] === null) {
@@ -58,7 +58,7 @@ class DropBoxController extends Controller
 //                    Log::debug($dropboxFile[0] . ' was deleted.');
                     continue;
                 }
-                $filename = storage_path() . $dropboxFile[0];
+                $filename = storage_path('meets') . $dropboxFile[0];
                 $dirname = dirname($filename);
                 if (!is_dir($dirname)) {
                     mkdir($dirname, 0750, true);
@@ -75,7 +75,7 @@ class DropBoxController extends Controller
                 // send notice now
                 // TODO: Can the data be included in the message?
                 $data = (new MeetController())->event($request, $meetId, $eventRoundHeat['event'], $eventRoundHeat['round']);
-Log::info($data);
+
                 LaravelPusher::trigger(["meet-$meetId"], 'update', ['data' => [
                     'event' => $eventRoundHeat['event'],
                     'round' => $eventRoundHeat['round'],

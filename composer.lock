@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "241c1fbd73edf5a6eb8cf8b89d28c74e",
-    "content-hash": "24bdea1090fd149f539728483c606e27",
+    "hash": "caad5da8eaf71e0e0ed74fed18abf80d",
+    "content-hash": "91a1e430eaf45d6da0a256999779677d",
     "packages": [
         {
             "name": "arcanedev/log-viewer",
@@ -1161,6 +1161,57 @@
                 "routing"
             ],
             "time": "2015-11-14 14:03:32"
+        },
+        {
+            "name": "hirak/prestissimo",
+            "version": "0.1.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hirak/prestissimo.git",
+                "reference": "614ea9f0028b4526e78e570c1c3eb25a2fe0a419"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hirak/prestissimo/zipball/614ea9f0028b4526e78e570c1c3eb25a2fe0a419",
+                "reference": "614ea9f0028b4526e78e570c1c3eb25a2fe0a419",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "~1.0.0-alpha10",
+                "ext-curl": "*",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "composer/composer": "1.0.0-alpha10",
+                "pdepend/pdepend": "^2.2",
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Hirak\\Prestissimo\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hirak\\Prestissimo\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hiraku NAKANO",
+                    "email": "hiraku@tojiru.net"
+                }
+            ],
+            "description": "composer parallel install plugin",
+            "keywords": [
+                "install",
+                "parallel",
+                "speedup"
+            ],
+            "time": "2016-02-10 00:17:04"
         },
         {
             "name": "jakub-onderka/php-console-color",

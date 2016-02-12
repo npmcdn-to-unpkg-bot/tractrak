@@ -12,12 +12,12 @@
                         @if ( $meet->isDropBoxReady() )
                             <li class="label-success">Dropbox Ready!</li>
                         @else
-                            <li class="label-danger"><a href="{!! route('dropbox.start', ['id' => $meet->id]) !!}">DropBox Setup</a></li>
+                            <li class="label-danger"><a href="{!! route('dropbox.start', ['id' => $meet->id]) !!}">Dropbox Setup</a></li>
                         @endif
                         @if ($meet->isPaid())
                             <li class="label-success">Paid! Thank you.</li>
                         @else
-                            <li class="label-danger">You still need to pay.</li>
+                            <li class="label-info">During <em>Beta</em>, payment is not required. But you must {!! link_to_route('contact', 'contact us') !!} to get your meet activated.</li>
                         @endif
                         @if ($meet->ppl === 1)
                             <li class="label-success">Athletes loaded</li>

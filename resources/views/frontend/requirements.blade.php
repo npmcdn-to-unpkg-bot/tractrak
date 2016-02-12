@@ -28,8 +28,8 @@
                 <div class="panel-body">
                     <ul>
                         <li>Internet connection (at race location)</li>
-                        <li><a href="https://www.dropbox.com">DropBox</a> installed on a computer that has access to the .LIF files. (You may need to request your IT department install this on a computer.)</li>
-                        <li>DropBox access (some IT departments block this, contact your IT department for help, some will unblock for coaches, teachers or administrators for a specific need.)</li>
+                        <li><a href="https://www.dropbox.com">Dropbox</a> installed on a computer that has access to the .LIF files. (You may need to request your IT department install this on a computer.)</li>
+                        <li>Dropbox access (some IT departments block this, contact your IT department for help, some will unblock for coaches, teachers or administrators for a specific need.)</li>
                         <li><a href="http://www.finishlynx.com/">FinishLynx</a> &mdash; <a href="http://flashtiming.com/">FlashTiming</a> &mdash; or a timing system that can output <strong>.LIF</strong> files. We plan to support more file formats and systems in the future.</li>
                     </ul>
                 </div>

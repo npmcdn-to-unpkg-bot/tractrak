@@ -43,7 +43,7 @@
                 <div class="panel-heading">Meet Management</div>
 
                 <div class="panel-body">
-                    <a href="{!!route('frontend.meet.create')!!}" class="btn btn-primary btn-sm">Create Meet</a>
+                    {!! link_to_route('frontend.meet.create', 'Create Meet', null, ['class' => 'btn btn-primary btn-sm']) !!}
                 </div><!--panel body-->
 
             </div><!-- panel -->

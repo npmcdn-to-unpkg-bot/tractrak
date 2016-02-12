@@ -33,6 +33,9 @@ class FrontendController extends Controller
 
         $return = [];
         foreach ($upcomingMeets as $meet) {
+            if (!$meet->paid) {
+                continue;
+            }
             $return[] = [
                 'link' => URL::route('frontend.meet.live', ['id' => $meet->id]),
                 'name' => $meet->name,
