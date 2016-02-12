@@ -51,11 +51,28 @@ class Meet extends Model {
     }
 
     /**
+     * @param integer $stadiumId
+     * @return $this
+     */
+    public function setStadium($stadiumId)
+    {
+        $stadium = Stadium::find($stadiumId);
+        if (!is_null($stadium)) {
+            $this->stadium_id = $stadiumId;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param User $user
+     * @return $this
      */
     public function setOwner(User $user)
     {
         $this->owner_id = $user->id;
+
+        return $this;
     }
 
     public function isPaid()

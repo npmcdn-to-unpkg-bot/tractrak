@@ -6,7 +6,7 @@ use App\Services\Macros;
  * Class MacroServiceProvider
  * @package App\Providers
  */
-class MacroServiceProvider extends \Illuminate\Html\HtmlServiceProvider {
+class MacroServiceProvider extends \Collective\Html\HtmlServiceProvider {
 
 	/**
 	 * Bootstrap the application services.

@@ -42,18 +42,12 @@ class MeetController extends Controller
      */
     public function edit($id)
     {
-        $stadiumResults = Stadium::all();
-        $stadiums = [];
-        foreach ($stadiumResults as $key => $value) {
-            $stadiums[$key] = $value->name;
-        }
-
         $meet = Meet::findOrFail($id);
         return view('frontend.meet.modify')
             ->withUser(auth()->user())
             ->with([
                 'meet' => $meet,
-                'stadiums' => $stadiums,
+                'stadiums' => $this->stadiumList(),
             ]);
     }
 
@@ -65,14 +59,20 @@ class MeetController extends Controller
     {
         $meet = Meet::findOrFail($id);
         $meet->name = Input::get('meetName');
-        $meet->sponsor = Input::get('meetSponsor');
-        $meet->stadium = Input::get('stadium');
+        $meet->sponsor = empty(Input::get('meetSponsor')) ? null : Input::get('meetSponsor');
+        if (Input::get('stadium')) {
+            $meet->setStadium(Input::get('stadium'));
+        }
         $meet->meet_date = Input::get('meetDate') . ' ' . Input::get('meetTime');
         $meet->save();
 
-        return view('frontend.meet.modify')
+        return redirect()->route('frontend.meet.modify', [$id])
             ->withUser(auth()->user())
-            ->with(['meet' => $meet]);
+            ->with([
+                'meet' => $meet,
+                'stadiums' => $this->stadiumList(),
+                'status' => 'Meet updated!',
+            ]);
     }
 
     /**
@@ -80,16 +80,10 @@ class MeetController extends Controller
      */
     public function create()
     {
-        $stadiumResults = Stadium::all();
-        $stadiums = [];
-        foreach ($stadiumResults as $key => $value) {
-            $stadiums[$key] = $value->name;
-        }
-
         return view('frontend.meet.create')
             ->withUser(auth()->user())
             ->with([
-                'stadiums' => $stadiums,
+                'stadiums' => $this->stadiumList(),
             ]);
     }
 
@@ -100,15 +94,32 @@ class MeetController extends Controller
     {
         $meet = new Meet();
         $meet->name = Input::get('meetName');
-        $meet->sponsor = Input::get('meetSponsor');
-        $meet->stadium = Input::get('stadium');
-        $meet->meet_date = Input::get('meetDate') . ' ' . Input::get('meetTime') . ':00';
+        $meet->sponsor = empty(Input::get('meetSponsor')) ? null : Input::get('meetSponsor');
+        if (Input::get('stadium')) {
+            $meet->setStadium(Input::get('stadium'));
+        }
+        $meet->meet_date = Input::get('meetDate') . ' ' . Input::get('meetTime');
         $meet->setOwner(auth()->user());
         $meet->save();
 
-        return view('frontend.meet.modify')
+        return redirect()->route('frontend.meet.modify', [$meet->id])
             ->withUser(auth()->user())
-            ->with(['meet' => $meet]);
+            ->with([
+                'meet' => $meet,
+                'stadiums' => $this->stadiumList(),
+                'status' => 'Meet created!',
+            ]);
+    }
+
+    private function stadiumList()
+    {
+        $stadiumResults = Stadium::all();
+        $stadiums = [];
+        foreach ($stadiumResults as $stadium) {
+            $stadiums[$stadium->id] = $stadium->name;
+        }
+
+        return $stadiums;
     }
 
     /**

@@ -5,7 +5,9 @@
 @if ($meet->sponsor)
  | {{ $meet->sponsor }}
 @endif
+@if ($meet->stadium)
  | {{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}
+@endif
 @endsection
 
 @section('content')
@@ -17,7 +19,9 @@
                     @if ($meet->sponsor)
                         <h2>{{ $meet->sponsor }}</h2>
                     @endif
-                    <h3>{{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}</h3>
+                    @if ($meet->stadium)
+                        <h3>{{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}</h3>
+                    @endif
 
                     <h3>{{ $meet->meet_date->format('l, F d, Y, g:ia') }}</h3>
                 </div>
@@ -91,13 +95,14 @@
             <div class="alert alert-info" role="alert">We're glad you're pumped for the meet. It's not quite ready yet.
                 Please check back closer to the start time listed above.
             </div>
+            <div class="alert alert-info" role="alert">If the meet time has passed, there may be some troubles at the meet ...</div>
         @endif
     </div>
 @endsection
 
 @section('after-scripts-end')
-    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/1.0.13/vue.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/vue-resource/0.6.0/vue-resource.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/1.0.16/vue.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
     <script src="//js.pusher.com/3.0/pusher.min.js"></script>
     <script src="/js/meet.js"></script>
     <script>
@@ -120,5 +125,47 @@
             vm.update(eventId, roundId);
             $('#updated-icon-' + eventId).addClass('hide');
         });
+
+        // Include the UserVoice JavaScript SDK (only needed once on a page)
+        UserVoice=window.UserVoice||[];(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/X4jqJY0XEuZH5ky7Vs6K0w.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})();
+
+        //
+        // UserVoice Javascript SDK developer documentation:
+        // https://www.uservoice.com/o/javascript-sdk
+        //
+
+        // Set colors
+        UserVoice.push(['set', {
+            accent_color: '#6aba2e',
+            trigger_color: 'white',
+            trigger_background_color: '#6aba2e'
+        }]);
+
+        // Identify the user and pass traits
+        // To enable, replace sample data with actual user traits and uncomment the line
+       // UserVoice.push(['identify', {
+            //email:      'john.doe@example.com', // User’s email address
+            //name:       'John Doe', // User’s real name
+            //created_at: 1364406966, // Unix timestamp for the date the user signed up
+            //id:         123, // Optional: Unique id of the user (if set, this should not change)
+            //type:       'Owner', // Optional: segment your users by type
+            //account: {
+            //  id:           123, // Optional: associate multiple users with a single account
+            //  name:         'Acme, Co.', // Account name
+            //  created_at:   1364406966, // Unix timestamp for the date the account was created
+            //  monthly_rate: 9.99, // Decimal; monthly rate of the account
+            //  ltv:          1495.00, // Decimal; lifetime value of the account
+            //  plan:         'Enhanced' // Plan name for the account
+            //}
+        //}]);
+
+        // Add default trigger to the bottom-right corner of the window:
+        UserVoice.push(['addTrigger', {trigger_position: 'bottom-right' }]);
+
+        // Or, use your own custom trigger:
+        //UserVoice.push(['addTrigger', '#id']);
+
+        // Autoprompt for Satisfaction and SmartVote (only displayed under certain conditions)
+        UserVoice.push(['autoprompt', {}]);
     </script>
 @stop

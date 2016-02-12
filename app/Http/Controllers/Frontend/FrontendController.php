@@ -23,7 +23,7 @@ class FrontendController extends Controller
             $return[] = [
                 'link' => URL::route('frontend.meet.live', ['id' => $meet->id]),
                 'name' => $meet->name,
-                'location' => $meet->stadium,
+                'location' => $meet->stadium ? $meet->stadium : '',
                 'datetime' =>$meet->meet_date->format('l, F d, Y, g:ia'),
             ];
         }
@@ -36,7 +36,7 @@ class FrontendController extends Controller
             $return[] = [
                 'link' => URL::route('frontend.meet.live', ['id' => $meet->id]),
                 'name' => $meet->name,
-                'location' => $meet->stadium,
+                'location' => $meet->stadium ? $meet->stadium : '',
                 'datetime' =>$meet->meet_date->format('l, F d, Y, g:ia'),
             ];
         }

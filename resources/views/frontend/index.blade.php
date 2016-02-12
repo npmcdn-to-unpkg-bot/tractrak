@@ -31,7 +31,11 @@
                 <div class="panel-heading"><i class="fa fa-calendar"></i> Upcoming meets</div>
                 <div class="panel-body">
                     @foreach ( $upcomingMeets as $meet )
-                        <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a> at {{ $meet['location']->name }} on {{ $meet['datetime'] }}</li>
+                        <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a>
+                            @if ($meet['location'])
+                                at {{ $meet['location']->name }}
+                            @endif
+                            on {{ $meet['datetime'] }}</li>
                     @endforeach
                 </div>
             </div>
@@ -41,7 +45,11 @@
                 <div class="panel-heading"><i class="fa fa-calendar"></i> Recent meets</div>
                 <div class="panel-body">
                     @foreach ( $recentMeets as $meet )
-                        <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a> at {{ $meet['location']->name }} at {{ $meet['datetime'] }}</li>
+                        <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a>
+                            @if ($meet['location'])
+                                at {{ $meet['location']->name }}
+                            @endif
+                            at {{ $meet['datetime'] }}</li>
                     @endforeach
                 </div>
             </div>

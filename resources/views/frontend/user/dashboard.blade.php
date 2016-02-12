@@ -53,13 +53,14 @@
 
                     <div class="panel-body">
                         @foreach($user->meets as $meet)
-                            <li>{{ $meet->name }}, at {{ $meet->stadium->name }} on {{ $meet->meet_date }}
-                                <a href="{!! route('frontend.meet.modify', ['id' => $meet->id]) !!}"
-                                   class="btn btn-primary btn-sm">Modify Meet</a>
-                                <a href="{!! route('frontend.meet.run', ['id' => $meet->id]) !!}"
-                                   class="btn btn-success btn-sm">Run Meet</a>
-                                <a href="{!! route('frontend.meet.live', ['id' => $meet->id]) !!}"
-                                    class="btn btn-success btn-sm">View Meet</a>
+                            <li>{{ $meet->name }},
+                                @if ($meet['location'])
+                                    at {{ $meet['location']->name }}
+                                @endif
+                                on {{ $meet->meet_date }}
+                                {!! link_to_route('frontend.meet.modify', 'Modify Meet', ['id' => $meet->id], ['class' => 'btn btn-primary btn-sm']) !!}
+                                {!! link_to_route('frontend.meet.run', 'Run Meet', ['id' => $meet->id], ['class' => 'btn btn-success btn-sm']) !!}
+                                {!! link_to_route('frontend.meet.live', 'View Meet', ['id' => $meet->id], ['class' => 'btn btn-success btn-sm']) !!}
                             </li>
                         @endforeach
                     </div><!--panel body-->

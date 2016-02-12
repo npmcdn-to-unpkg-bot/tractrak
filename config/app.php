@@ -144,7 +144,6 @@ return [
 		'Illuminate\Translation\TranslationServiceProvider',
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
-		'Illuminate\Html\HtmlServiceProvider',
 
 		/*
 		 * Application Service Providers...
@@ -170,6 +169,7 @@ return [
 		Vinkla\Pusher\PusherServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+		Collective\Html\HtmlServiceProvider::class,
 	],
 
 	/*
@@ -220,12 +220,13 @@ return [
 
 		/* Third Party */
 		'Active'    => 'HieuLe\Active\Facades\Active',
-		'Form'		=> 'Illuminate\Html\FormFacade',
 		'Gravatar'  => 'Creativeorange\Gravatar\Facades\Gravatar',
-		'HTML'		=> 'Illuminate\Html\HtmlFacade',
 		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
 		'Socialite' => 'Laravel\Socialite\Facades\Socialite',
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
 		'LaravelPusher'	=> Vinkla\Pusher\Facades\Pusher::class,
+		'Form' => Collective\Html\FormFacade::class,
+		'Html' => Collective\Html\HtmlFacade::class,
+		'HTML' => Collective\Html\HtmlFacade::class,
 	],
 ];
