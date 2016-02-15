@@ -15,7 +15,7 @@ class CreateRoleRequest extends Request {
 	 */
 	public function authorize()
 	{
-		return access()->can('create-roles');
+		return app('access')->can('create-roles');
 	}
 
 	/**

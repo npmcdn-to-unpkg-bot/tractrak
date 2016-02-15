@@ -15,7 +15,7 @@ class UpdateUserPasswordRequest extends Request {
 	 */
 	public function authorize()
 	{
-		return access()->can('change-user-password');
+		return app('access')->can('change-user-password');
 	}
 
 	/**

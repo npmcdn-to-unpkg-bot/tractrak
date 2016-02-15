@@ -30,4 +30,12 @@ class Stadium extends Model {
 	 * @var array
 	 */
 	protected $dates = ['deleted_at'];
+
+	/*
+     * The meets held in this stadium
+     */
+	public function meets()
+	{
+		return $this->hasMany(Meet::class, 'stadium_id', 'id');
+	}
 }

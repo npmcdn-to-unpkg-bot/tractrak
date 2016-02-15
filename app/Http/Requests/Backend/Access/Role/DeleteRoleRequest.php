@@ -15,7 +15,7 @@ class DeleteRoleRequest extends Request {
      */
     public function authorize()
     {
-        return access()->can('delete-roles');
+        return app('access')->can('delete-roles');
     }
 
     /**

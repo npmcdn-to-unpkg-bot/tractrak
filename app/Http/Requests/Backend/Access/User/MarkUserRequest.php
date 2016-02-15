@@ -18,15 +18,15 @@ class MarkUserRequest extends Request {
         //Get the 'mark' id
         switch((int) request()->segment(6)) {
             case 0:
-                return access()->can('deactivate-users');
+                return app('access')->can('deactivate-users');
             break;
 
             case 1:
-                return access()->can('reactivate-users') || access()->can('unban-users');
+                return app('access')->can('reactivate-users') || app('access')->can('unban-users');
             break;
 
             case 2:
-                return access()->can('ban-users');
+                return app('access')->can('ban-users');
             break;
         }
 

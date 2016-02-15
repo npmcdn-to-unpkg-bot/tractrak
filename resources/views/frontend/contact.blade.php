@@ -1,7 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    Contact Information | {{  app_name() }}
+    Contact Information | {{ config('app.name') }}
 @endsection
 
 @section('content')

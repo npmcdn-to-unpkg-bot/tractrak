@@ -16,7 +16,7 @@ class RouteNeedsPermission {
      */
 	public function handle($request, Closure $next, $permission)
 	{
-		if (! access()->can($permission))
+		if (! app('access')->can($permission))
 			return redirect('/')->withFlashDanger("You do not have access to do that.");
 		return $next($request);
 	}

@@ -15,7 +15,7 @@ class EditPermissionGroupRequest extends Request {
      */
     public function authorize()
     {
-        return access()->can('edit-permission-groups');
+        return app('access')->can('edit-permission-groups');
     }
 
     /**

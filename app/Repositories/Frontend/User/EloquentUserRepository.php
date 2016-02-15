@@ -51,7 +51,7 @@ class EloquentUserRepository implements UserContract {
 		]);
 		$user->attachRole($this->role->getDefaultUserRole());
 
-		if (config('access.users.confirm_email') and $provider === false)
+		if (config('access.users.confirm_email') && $provider === false)
         		$this->sendConfirmationEmail($user);
     		else
         		$user->confirmed = 1;
@@ -139,7 +139,7 @@ class EloquentUserRepository implements UserContract {
 	 * @throws GeneralException
 	 */
 	public function updateProfile($input) {
-		$user = access()->user();
+		$user = app('access')->user();
 		$user->name = $input['name'];
 
 		if ($user->canChangeEmail()) {
@@ -207,7 +207,7 @@ class EloquentUserRepository implements UserContract {
 
 		return Mail::send('emails.confirm', ['token' => $user->confirmation_code], function($message) use ($user)
 		{
-			$message->to($user->email, $user->name)->subject(app_name().': Confirm your account!');
+			$message->to($user->email, $user->name)->subject(config('app.name').': Confirm your account!');
 		});
 	}
 }

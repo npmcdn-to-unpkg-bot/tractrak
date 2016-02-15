@@ -1,6 +1,7 @@
 <?php namespace App\Models;
 
 use URL;
+use PDF;
 use Endroid\QrCode\QrCode;
 use App\Models\Access\User\User;
 use Illuminate\Database\Eloquent\Model;
@@ -114,6 +115,13 @@ class Meet extends Model {
         ;
 
         return $qrCode;
+    }
+
+    public function generatePDF()
+    {
+        $html = '<img alt="QR code" src="' . $this->qr()->getDataUri() . '" />';
+        $pdf = PDF::loadHTML($html);
+        return $pdf->download('tractrak.pdf');
     }
 
     public function isDropBoxReady()

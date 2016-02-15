@@ -24,12 +24,11 @@
     "vinkla/pusher": "^2.1",
     "ddeboer/data-import": "@stable",
     "endroid/qrcode": "^1.5",
-    "barryvdh/laravel-dompdf": "^0.6.0",
+    "barryvdh/laravel-snappy": "0.2.*",
     "dropbox/dropbox-sdk": "1.1.*",
     "barryvdh/laravel-debugbar": "^2.0",
     "barryvdh/laravel-ide-helper": "^2.1",
-    "guzzlehttp/guzzle": "~5.3|~6.0",
-    "hirak/prestissimo": "^0.1.10"
+    "guzzlehttp/guzzle": "~5.3|~6.0"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",

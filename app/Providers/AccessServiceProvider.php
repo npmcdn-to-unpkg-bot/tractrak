@@ -110,18 +110,18 @@ class AccessServiceProvider extends ServiceProvider
 		 * Accepts either string of Role Name or Role ID
 		 */
 		Blade::directive('role', function($role) {
-			return "<?php if (access()->hasRole{$role}): ?>";
+			return "<?php if (app('access')->hasRole{$role}): ?>";
 		});
 
 		/**
 		 * Accepts array of names or id's
 		 */
 		Blade::directive('roles', function($roles) {
-			return "<?php if (access()->hasRoles{$roles}): ?>";
+			return "<?php if (app('access')->hasRoles{$roles}): ?>";
 		});
 
 		Blade::directive('needsroles', function($roles) {
-			return "<?php if (access()->hasRoles(".$roles.", true)): ?>";
+			return "<?php if (app('access')->hasRoles(".$roles.", true)): ?>";
 		});
 
 		/**
@@ -129,18 +129,18 @@ class AccessServiceProvider extends ServiceProvider
 		 * Accepts wither string of Permission Name or Permission ID
 		 */
 		Blade::directive('permission', function($permission) {
-			return "<?php if (access()->can{$permission}): ?>";
+			return "<?php if (app('access')->can{$permission}): ?>";
 		});
 
 		/**
 		 * Accepts array of names or id's
 		 */
 		Blade::directive('permissions', function($permissions) {
-			return "<?php if (access()->canMultiple{$permissions}): ?>";
+			return "<?php if (app('access')->canMultiple{$permissions}): ?>";
 		});
 
 		Blade::directive('needspermissions', function($permissions) {
-			return "<?php if (access()->canMultiple(".$permissions.", true)): ?>";
+			return "<?php if (app('access')->canMultiple(".$permissions.", true)): ?>";
 		});
 
 		/**

@@ -10,6 +10,7 @@ get('/contact', 'FrontendController@contact')->name('contact');
 get('macros', 'FrontendController@macros');
 
 get('meet/{id}', 'MeetController@live')->name('frontend.meet.live')->where(['id' => '[0-9]+']);
+get('stadium/{id}', 'StadiumController@viewStadium')->name('frontend.stadium.view')->where(['id' => '[0-9]+']);
 
 get('/api-view/meet-event/{meetId}/{eventId?}/{roundId?}/{heatId?}', 'MeetController@viewEvent');
 get('/api/meet-event/{meetId}', 'MeetController@meet');

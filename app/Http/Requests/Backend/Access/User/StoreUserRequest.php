@@ -15,7 +15,7 @@ class StoreUserRequest extends Request {
      */
     public function authorize()
     {
-        return access()->can('create-users');
+        return app('access')->can('create-users');
     }
 
     /**

@@ -343,6 +343,13 @@ class MeetController extends Controller
             ->with(['data' => $return]);
     }
 
+    public function generatePDF($meetId)
+    {
+        $meet = Meet::findOrFail($meetId);
+
+        return $meet->generatePDF();
+    }
+
     /**
      * Return the event IDs for provided meet
      * @param Request $request

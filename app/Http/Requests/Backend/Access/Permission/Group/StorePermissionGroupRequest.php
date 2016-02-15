@@ -15,7 +15,7 @@ class StorePermissionGroupRequest extends Request {
      */
     public function authorize()
     {
-        return access()->can('create-permission-groups');
+        return app('access')->can('create-permission-groups');
     }
 
     /**

@@ -100,7 +100,6 @@ class DropBoxController extends Controller
         // For Challenge setup
         $challenge = Input::get('challenge');
         echo $challenge;
-        exit();
     }
 
     /**

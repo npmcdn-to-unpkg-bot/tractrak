@@ -15,7 +15,7 @@ class DeleteUserRequest extends Request {
      */
     public function authorize()
     {
-        return access()->can('delete-users');
+        return app('access')->can('delete-users');
     }
 
     /**

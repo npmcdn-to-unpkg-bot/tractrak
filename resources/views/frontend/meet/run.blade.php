@@ -46,7 +46,7 @@
                 <div class="panel-body">
                     {!! Form::open(['route' => ['frontend.meet.preLoad', $meet->id], 'files' => true]) !!}
                     {!! Form::file('file') !!}
-                    {!! Form::submit() !!}
+                    {!! Form::submit('Upload', ['class' => 'btn btn-primary']) !!}
                     {!! Form::close() !!}
                 </div><!--panel body-->
 
@@ -56,6 +56,7 @@
                 <div class="panel-heading">QR Code</div>
                 <div class="panel-body">
                     <img alt="QR code" src="{!! $meet->qr()->getDataUri() !!}" />
+                    {!! link_to_route('frontend.meet.pdf', 'Download PDF', ['id' => $meet->id], ['class' => 'btn btn-primary btn-sm']) !!}
                 </div><!--panel body-->
 
             </div><!-- panel -->
