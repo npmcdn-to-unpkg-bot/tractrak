@@ -46,4 +46,14 @@ class Team extends Model {
 	{
 		return $this->morphToMany('App\Models\Race', 'competitor');
 	}
+
+	/**
+	 * Helper function to get name of team
+	 *     Normally not needed, but matches declaration in Athlete
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
 }

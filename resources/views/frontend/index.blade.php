@@ -42,7 +42,7 @@
         </div>
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
-                <div class="panel-heading"><i class="fa fa-calendar"></i> Recent meets</div>
+                <div class="panel-heading"><i class="fa fa-calendar"></i> Past meets</div>
                 <div class="panel-body">
                     @foreach ( $recentMeets as $meet )
                         <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a>

@@ -59,9 +59,20 @@ class Race extends Model {
         return $this->morphedByMany('App\Models\Athlete', 'competitor')->withPivot('lane', 'result', 'place', 'overall');
     }
 
-
     public function teams()
     {
         return $this->morphedByMany('App\Models\Team', 'competitor')->withPivot('lane', 'result', 'place', 'overall');
+    }
+
+    public function firstPlace()
+    {
+        if ($this->isAthleteRace()) {
+            $competitors = $this->athletes();
+//            dd($competitors->where('place', '1')->first());
+        } else {
+            $competitors = $this->teams();
+        }
+
+        return $competitors->where('place', '1')->first();
     }
 }

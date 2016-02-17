@@ -47,4 +47,13 @@ class Athlete extends Model {
 	{
 		return $this->morphToMany('App\Models\Race', 'competitor');
 	}
+
+    /**
+     * Helper function to combine first and last name nicely
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 }
