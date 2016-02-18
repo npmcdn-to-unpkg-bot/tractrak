@@ -8,4 +8,4 @@ post('edit/team/{id}', 'AdminController@saveEditTeam')->name('admin.edit.saveTea
 
 get('edit/athlete', 'AdminController@selectAthleteToEdit')->name('admin.edit.athlete.select');
 get('edit/athlete/{id}', 'AdminController@editAthlete')->name('admin.edit.athlete');
-post('edit/athlete/{id}', 'AdminController@editAthlete')->name('admin.edit.athlete');
+post('edit/athlete/{id}', 'AdminController@saveEditAthlete')->name('admin.edit.saveAthlete');

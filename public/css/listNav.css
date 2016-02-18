@@ -1,0 +1,115 @@
+li {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    list-style-type: none;
+}
+
+.ln-letters {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    display: table;
+    width: 100%
+}
+
+@media only screen and (max-width: 768px) {
+    .ln-letters {
+        margin-top: 0
+    }
+}
+
+.ln-letters a {
+    position: relative;
+    width: 1%;
+    display: table-cell;
+    text-align: center;
+    padding: 12px 0;
+    background: #565656;
+    color: #39ff14;
+    text-decoration: none;
+    border-right: 1px solid #fff
+}
+
+.ln-letters a:last-child {
+    border-right: none
+}
+
+.ln-letters a.z {
+    border-right: none
+}
+
+@media only screen and (max-width: 768px) {
+    .ln-letters a {
+        display: inline-block;
+        width: 10%;
+        border-bottom: 1px solid #fff
+    }
+
+    .ln-letters a:last-child {
+        border-right: 1px solid #fff
+    }
+}
+
+.ln-letters .ln-last {
+    /*display: none*/
+}
+
+.ln-letters a:hover, .ln-letters a:focus, .ln-letters .ln-selected {
+    background-color: #39ff14 !important;
+    color: #565656
+}
+
+.ln-letters .ln-disabled {
+    cursor: not-allowed;
+    color: #fff
+}
+
+.ln-letter-count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    text-align: center;
+    font-size: 0.8em;
+    font-weight: bold
+}
+
+.az li:hover {
+    background: #eceded
+}
+
+.az li a {
+}
+
+.listNav, .ln-letters {
+    overflow: hidden
+}
+
+.listNavHide {
+    display: none
+}
+
+.listNavShow {
+    display: list-item
+}
+
+.ln-no-match {
+    padding: 12px 10px !important;
+    text-align: center;
+    font-weight: bold;
+    background: #fff !important
+}
+
+.ln-no-match:hover {
+    background: #fff !important
+}
+
+.letterCountShow {
+    display: block
+}
+
+@media only screen and (max-width: 768px) {
+    .letterCountShow {
+        display: none
+    }
+}
