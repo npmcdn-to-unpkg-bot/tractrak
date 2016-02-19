@@ -38,4 +38,14 @@ class Stadium extends Model {
 	{
 		return $this->hasMany(Meet::class, 'stadium_id', 'id');
 	}
+
+	public function state()
+    {
+        return $this->hasOne('App\Models\State', 'id', 'stateid');
+    }
+
+    public function country()
+    {
+        return $this->hasOne('App\Models\Country', 'id', 'countryid');
+    }
 }

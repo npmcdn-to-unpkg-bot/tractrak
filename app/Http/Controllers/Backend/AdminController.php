@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Models\Athlete;
+use App\Models\Stadium;
 use App\Models\State;
 use App\Models\Team;
 use Illuminate\Support\Facades\Input;
@@ -107,6 +108,65 @@ class AdminController extends Controller
 
         return back()->with([
             'status' => 'Athlete updated!',
+        ]);
+    }
+
+    /**
+     * @return View
+     */
+    public function selectStadiumToEdit()
+    {
+        return view('backend.edit.stadiumList')
+            ->with([
+                'stadiums' => Stadium::orderBy('name', 'asc')->get(),
+            ]);
+    }
+
+    /**
+     * @param integer $id
+     * @return View
+     */
+    public function editStadium($id)
+    {
+        $stadium = Stadium::find($id);
+
+        return view('backend.edit.stadium')
+            ->with([
+                'stadium' => $stadium,
+            ]);
+    }
+
+    /**
+     * @param integer $id
+     * @return View
+     */
+    public function saveEditStadium($id)
+    {
+        $stadium = Stadium::find($id);
+
+        $stadium->name = Input::get('name');
+        $stadium->googlename = Input::get('googlename');
+        $stadium->city = Input::get('city');
+        $stadium->stateid = Input::get('stateid');
+        $stadium->zip = Input::get('zip');
+        $stadium->countryid = Input::get('countryid');
+
+        if (Input::get('address')) {
+            $stadium->address = Input::get('address');
+        }
+
+        if (Input::get('lat')) {
+            $stadium->lat = Input::get('lat');
+        }
+
+        if (Input::get('lng')) {
+            $stadium->lng = Input::get('lng');
+        }
+
+        $stadium->save();
+
+        return back()->with([
+            'status' => 'Stadium updated!',
         ]);
     }
 }

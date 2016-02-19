@@ -9,3 +9,7 @@ post('edit/team/{id}', 'AdminController@saveEditTeam')->name('admin.edit.saveTea
 get('edit/athlete', 'AdminController@selectAthleteToEdit')->name('admin.edit.athlete.select');
 get('edit/athlete/{id}', 'AdminController@editAthlete')->name('admin.edit.athlete');
 post('edit/athlete/{id}', 'AdminController@saveEditAthlete')->name('admin.edit.saveAthlete');
+
+get('edit/stadium', 'AdminController@selectStadiumToEdit')->name('admin.edit.stadium.select');
+get('edit/stadium/{id}', 'AdminController@editStadium')->name('admin.edit.stadium');
+post('edit/stadium/{id}', 'AdminController@saveEditStadium')->name('admin.edit.saveStadium');

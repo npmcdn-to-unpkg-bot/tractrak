@@ -31,11 +31,11 @@
                 <div class="panel-heading"><i class="fa fa-calendar"></i> Upcoming meets</div>
                 <div class="panel-body">
                     @foreach ( $upcomingMeets as $meet )
-                        <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a>
-                            @if ($meet['location'])
-                                at {{ $meet['location']->name }}
+                        <li>{!! link_to_route('frontend.meet.live', $meet->name, $meet->id) !!}
+                            @if ($meet->stadium)
+                                at {!! link_to_route('frontend.stadium.view', $meet->stadium->name, $meet->stadium->id) !!}
                             @endif
-                            on {{ $meet['datetime'] }}</li>
+                            on {{ $meet->meet_date->format('l, F d, Y, g:ia') }}</li>
                     @endforeach
                 </div>
             </div>
@@ -45,11 +45,11 @@
                 <div class="panel-heading"><i class="fa fa-calendar"></i> Past meets</div>
                 <div class="panel-body">
                     @foreach ( $recentMeets as $meet )
-                        <li><a href="{{ $meet['link'] }}">{{ $meet['name'] }}</a>
-                            @if ($meet['location'])
-                                at {{ $meet['location']->name }}
+                        <li>{!! link_to_route('frontend.meet.live', $meet->name, $meet->id) !!}
+                            @if ($meet->stadium)
+                                at {!! link_to_route('frontend.stadium.view', $meet->stadium->name, $meet->stadium->id) !!}
                             @endif
-                            at {{ $meet['datetime'] }}</li>
+                            on {{ $meet->meet_date->format('l, F d, Y, g:ia') }}</li>
                     @endforeach
                 </div>
             </div>

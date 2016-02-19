@@ -5,7 +5,7 @@
 @if ($meet->sponsor)
  | {{ $meet->sponsor }}
 @endif
- | {{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}
+ | {{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state->abbr }}
 @endsection
 
 @section('content')
@@ -17,7 +17,7 @@
                     @if ($meet->sponsor)
                         <h2>{{ $meet->sponsor }}</h2>
                     @endif
-                    <h3>{{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state }}</h3>
+                    <h3>{!! link_to_route('frontend.stadium.view', $meet->stadium->name, $meet->stadium->id) !!}, {{ $meet->stadium->city }}, {{ $meet->stadium->state->name }}</h3>
 
                     <h3>{{ $meet->meet_date->format('l, F d, Y, g:ia') }}</h3>
                 </div>

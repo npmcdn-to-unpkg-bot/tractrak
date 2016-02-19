@@ -59,6 +59,9 @@
                     <li class="{{ Active::pattern('admin/edit/team') }}">
                         {!! link_to_route('admin.edit.team.select', 'Edit Teams') !!}
                     </li>
+                    <li class="{{ Active::pattern('admin/edit/stadium') }}">
+                        {!! link_to_route('admin.edit.stadium.select', 'Edit Stadiums') !!}
+                    </li>
                 </ul>
             </li>
             @endauth

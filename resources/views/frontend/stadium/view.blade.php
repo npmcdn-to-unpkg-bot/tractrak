@@ -1,16 +1,27 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-{{ $stadium->name }}, {{ $stadium->city }}, {{ $stadium->state }}
+{{ $stadium->name }}, {{ $stadium->city }}, {{ $stadium->state->abbr }}
 @endsection
 
 @section('content')
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 text-center">
+                @if($stadium->lat && $stadium->lng)
+                    <div style="float:right">
+                        @if($stadium->googlename)
+                            <a href="https://www.google.com/maps/search/{{ str_replace(' ', '+', $stadium->googlename) }},+{{ str_replace(' ', '+', $stadium->address) }},+{{  $stadium->city }},+{{ $stadium->state->name }}@if($stadium->zip),+{{ $stadium->zip }}@endif">
+                        @endif
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center={!! $stadium->lat !!},{!! $stadium->lng !!}&zoom=15&size=100x100&scale=2&maptype=satellite&key={{ env('GOOGLE_MAPS_API_KEY') }}" height="200px" width="200px">
+                        @if($stadium->googlename)
+                            </a>
+                        @endif
+                    </div>
+                @endif
                 <div class="center-block">
                     <h1>{{ $stadium->name }}</h1>
-                    <h3>{{ $stadium->city }}, {{ $stadium->state }}</h3>
+                    <h3>@if($stadium->address){{ $stadium->address }}<br>@endif{{ $stadium->city }}, {{ $stadium->state->name }}@if($stadium->zip) {{ $stadium->zip }}@endif</h3>
                 </div>
             </div>
         </div>
