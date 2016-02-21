@@ -7,6 +7,7 @@ get('edit/team/{id}', 'AdminController@editTeam')->name('admin.edit.team');
 post('edit/team/{id}', 'AdminController@saveEditTeam')->name('admin.edit.saveTeam');
 
 get('edit/athlete', 'AdminController@selectAthleteToEdit')->name('admin.edit.athlete.select');
+get('create/athlete', 'AdminController@createAthlete')->name('admin.create.athlete');
 get('edit/athlete/{id}', 'AdminController@editAthlete')->name('admin.edit.athlete');
 post('edit/athlete/{id}', 'AdminController@saveEditAthlete')->name('admin.edit.saveAthlete');
 
