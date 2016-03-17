@@ -3,7 +3,6 @@
 use App\Http\Controllers\Controller;
 use App\Models\Athlete;
 use App\Models\Stadium;
-use App\Models\State;
 use App\Models\Team;
 use Illuminate\Support\Facades\Input;
 use Illuminate\View\View;
@@ -77,6 +76,19 @@ class AdminController extends Controller
     public function editAthlete($id)
     {
         $athlete = Athlete::find($id);
+
+        return view('backend.edit.athlete')
+            ->with([
+                'athlete' => $athlete,
+            ]);
+    }
+
+    /**
+     * @return View
+     */
+    public function createAthlete()
+    {
+        $athlete = new Athlete;
 
         return view('backend.edit.athlete')
             ->with([

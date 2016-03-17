@@ -16,5 +16,15 @@ error_log
 .phpstorm.meta.php
 /public/error_log
 /storage/*
-
 tests/_output/*
+.name
+blade.xml
+deployment.xml
+encodings.xml
+jsLibraryMappings.xml
+misc.xml
+modules.xml
+TracTrak WiredTree.iml
+vcs.xml
+webResources.xml
+workspace.xml

@@ -6,6 +6,7 @@
         {{ session('status') }}
     </div>
     @endif
+
     <div class="row">
         <div class="col-xs-12">
             {!! Form::model($athlete, ['route' => ['admin.edit.saveAthlete', $athlete->id], 'class' => 'form-horizontal']) !!}
