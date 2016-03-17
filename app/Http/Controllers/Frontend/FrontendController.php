@@ -16,7 +16,10 @@ class FrontendController extends Controller
      */
     public function index()
     {
-        $recentMeets = Meet::where('meet_date', '<', \date('Y-m-d H:m:s'))->where('paid', 1)->orderBy('meet_date', 'desc')->take(5)->get();
+        $currentMeets = Meet::whereBetween('meet_date', [\date('Y-m-d 00:00:00'), \date('Y-m-d 23:59:59')])->where('paid', 1)->orderBy('meet_date', 'desc')->get();
+        $data['currentMeets'] = $currentMeets;
+        
+        $recentMeets = Meet::where('meet_date', '<', \date('Y-m-d H:m:s'))->where('paid', 1)->whereNotIn('id', $currentMeets->keys()->toArray())->orderBy('meet_date', 'desc')->take(5)->get();
         $data['recentMeets'] = $recentMeets;
 
         $upcomingMeets = Meet::where('meet_date', '>', \date('Y-m-d H:m:s'))->where('paid', 1)->orderBy('meet_date', 'asc')->take(5)->get();

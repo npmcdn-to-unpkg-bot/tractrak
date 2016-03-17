@@ -22,7 +22,17 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-clock-o"></i> Current meets</div>
                 <div class="panel-body">
-                    <em>Nothing happening right now...</em>
+                    @if (count($currentMeets))
+                        @foreach ( $currentMeets as $meet )
+                            <li>{!! link_to_route('frontend.meet.live', $meet->name, $meet->id) !!}
+                                @if ($meet->stadium)
+                                    at {!! link_to_route('frontend.stadium.view', $meet->stadium->name, $meet->stadium->id) !!}
+                                @endif
+                                on {{ $meet->meet_date->format('l, F d, Y, g:ia') }}</li>
+                        @endforeach
+                    @else
+                        <em>Nothing happening right now...</em>
+                    @endif
                 </div>
             </div>
         </div>
@@ -30,13 +40,17 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-calendar"></i> Upcoming meets</div>
                 <div class="panel-body">
-                    @foreach ( $upcomingMeets as $meet )
-                        <li>{!! link_to_route('frontend.meet.live', $meet->name, $meet->id) !!}
-                            @if ($meet->stadium)
-                                at {!! link_to_route('frontend.stadium.view', $meet->stadium->name, $meet->stadium->id) !!}
-                            @endif
-                            on {{ $meet->meet_date->format('l, F d, Y, g:ia') }}</li>
-                    @endforeach
+                    @if (count($upcomingMeets))
+                        @foreach ( $upcomingMeets as $meet )
+                            <li>{!! link_to_route('frontend.meet.live', $meet->name, $meet->id) !!}
+                                @if ($meet->stadium)
+                                    at {!! link_to_route('frontend.stadium.view', $meet->stadium->name, $meet->stadium->id) !!}
+                                @endif
+                                on {{ $meet->meet_date->format('l, F d, Y, g:ia') }}</li>
+                        @endforeach
+                    @else
+                        <em>Nothing planned right now...</em>
+                    @endif
                 </div>
             </div>
         </div>
