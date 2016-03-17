@@ -113,11 +113,11 @@
         var pusher = new Pusher("{{env("PUSHER_KEY")}}");
         var channel = pusher.subscribe('meet-{{ $meet->id }}');
         channel.bind('update', function (data) {
-            console.log('Ooooh, an update!');
-            console.log(data);
+//            console.log('Ooooh, an update!');
+//            console.log(data);
             var eventId = data['data']['event'];
             var roundId = data['data']['round'];
-            vm.update(eventId, roundId);
+            vm.update({{ $meet->id }}, eventId, roundId);
             $('#updated-icon-' + eventId).addClass('hide');
         });
     </script>

@@ -60,9 +60,9 @@ var vm = new Vue({
     el: '#vue',
 
     methods: {
-        update: function (event, round, heat) {
+        update: function (meet, event, round, heat) {
             // TODO: How to access without $children[0]
-            this.$children[0].fetchEvent(meetId, event, round, heat);
+            this.$children[0].fetchEvent(meet, event, round, heat);
         },
 
         updateData: function (data) {
@@ -77,7 +77,7 @@ var vm = new Vue({
 });
 
 var myOrderBy = function (arr, sortKey, reverse) {
-    var order = (reverse && reverse < 0) ? -1 : 1
+    var order = (reverse && reverse < 0) ? -1 : 1;
     // sort on a copy to avoid mutating original array
     // http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/
     /*
