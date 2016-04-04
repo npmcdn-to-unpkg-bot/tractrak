@@ -1,11 +1,10 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Level
  */
-class Level extends Model {
+class Level extends \Eloquent {
 
 	/**
 	 * The database table used by the model.

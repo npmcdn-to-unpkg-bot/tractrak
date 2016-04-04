@@ -1,11 +1,9 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Class Race
  */
-class Race extends Model {
+class Race extends \Eloquent {
 	/**
 	 * The database table used by the model.
 	 *

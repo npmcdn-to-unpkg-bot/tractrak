@@ -4,13 +4,12 @@ use URL;
 use PDF;
 use Endroid\QrCode\QrCode;
 use App\Models\Access\User\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Meet
  */
-class Meet extends Model {
+class Meet extends \Eloquent {
 
 	use SoftDeletes;
 

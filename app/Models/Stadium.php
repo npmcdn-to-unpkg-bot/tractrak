@@ -1,12 +1,11 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Stadium
  */
-class Stadium extends Model {
+class Stadium extends \Eloquent {
 
 	use SoftDeletes;
 

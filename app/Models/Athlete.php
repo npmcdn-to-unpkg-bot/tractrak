@@ -1,13 +1,12 @@
 <?php namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Athlete
  *  Gender: 0=male, 1=female
  */
-class Athlete extends Model {
+class Athlete extends \Eloquent {
 
 	use SoftDeletes;
 
