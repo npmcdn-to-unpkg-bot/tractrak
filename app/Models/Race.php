@@ -54,12 +54,12 @@ class Race extends \Eloquent {
 
     public function athletes()
     {
-        return $this->morphedByMany('App\Models\Athlete', 'competitor')->withPivot('lane', 'result', 'place', 'overall');
+        return $this->morphedByMany('App\Models\Athlete', 'competitor')->withPivot('lane', 'result', 'place');
     }
 
     public function teams()
     {
-        return $this->morphedByMany('App\Models\Team', 'competitor')->withPivot('lane', 'result', 'place', 'overall');
+        return $this->morphedByMany('App\Models\Team', 'competitor')->withPivot('lane', 'result', 'place');
     }
 
     public function firstPlace()

@@ -50,36 +50,27 @@ class DropBoxController extends Controller
 
             $delta = $dropboxUser->getDelta($cursor);
 //            Log::debug('User delta:');
-//            Log::debug($delta);
+            Log::debug($delta);
 
             foreach ($delta['entries'] as $dropboxFile) {
-                if ($dropboxFile[1] === null || $dropboxFile[1]['is_dir'] === true || strpos($dropboxFile[0], '.lif') === false) {
+                if ($dropboxFile[1] === null) {
                     //The file was deleted, so ignore
-                    //This is a directory, so ignore
-                    //This is not a ".lif" file, so ignore
+//                    Log::debug($dropboxFile[0] . ' was deleted.');
                     continue;
                 }
                 $filename = storage_path('meets') . $dropboxFile[0];
-//                Log::debug('Filename');
-//                Log::debug($filename);
-                $directoryName = dirname($filename);
-                if (!is_dir($directoryName)) {
-                    mkdir($directoryName, 0750, true);
+                $dirname = dirname($filename);
+                if (!is_dir($dirname)) {
+                    mkdir($dirname, 0750, true);
                 }
 
                 $fd = fopen($filename, "wb");
                 $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
-                $eventRoundHeat = $this->lifFile($filename, $meetId);
+                $eventRoundHeat = $this->lifFile($filename);
 
                 fclose($fd);
-                // TODO: Delete the file
-
-                // if the lif process returned null, it was a bad process
-                if ($eventRoundHeat === null) {
-                    continue;
-                }
 
                 // send notice now
                 // TODO: Can the data be included in the message?
@@ -103,7 +94,6 @@ class DropBoxController extends Controller
 
     /**
      * This is the challenge setup
-     * @param Request $request
      */
     public function challenge(Request $request)
     {
@@ -114,12 +104,11 @@ class DropBoxController extends Controller
 
     /**
      * @param $file
-     * @param int $meetID
      * @return array
      */
-    private function lifFile($fileName, $meetID)
+    private function lifFile($file)
     {
-        $file = new \SplFileObject($fileName);
+        $file = new \SplFileObject($file);
         $reader = new CsvReader($file);
         $rowCounter = 0;
         try {
@@ -135,7 +124,7 @@ class DropBoxController extends Controller
                     //   3 => name
                     //   4 =>
                     //   9 => distance?
-                    //   10 => Time of day (local) started, sometimes
+                    //   10 => Time of day (local) started
                     // )
                     $eventId = $row[0];
                     $roundId = $row[1];
@@ -143,16 +132,12 @@ class DropBoxController extends Controller
 
                     /** @var Race $race */
                     $race = Race::where([
-                        'meet_id' => $meetID,
                         'event' => $eventId,
                         'round' => $roundId,
                         'heat' => $heatId,
                     ])->firstOrFail();
 
-                    if (array_key_exists(10, $row)) {
-                        $race->start = $row[10];
-                    }
-
+                    $race->start = $row[10];
                     $race->save();
                 } else {
                     if (empty($row[1])) {
@@ -206,17 +191,14 @@ class DropBoxController extends Controller
                         //   16 => delta time from previous position?
                         // )
 
-                        if (array_key_exists(12, $row)) {
-                            $gender = $row[12] === 'M' ? 0 : 1;
-                            /** @var Athlete $athlete */
-                            $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender])->firstOrFail();
-                        } else {
-                            /** @var Athlete $athlete */
-                            $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3]])->firstOrFail();
-                        }
+                        $gender = $row[12] === 'M' ? 0 : 1;
+                        /** @var Athlete $athlete */
+                        $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender])->firstOrFail();
 
                         $place = isset($row[0]) ? $row[0] : null;
-                        $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $place]);
+                        $result = isset($row[6]) ? $row[6] : null;
+
+                        $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $result, 'place' => $place]);
                     }
                 }
             }
@@ -225,10 +207,6 @@ class DropBoxController extends Controller
             Log::debug($e);
         }
 
-        if (isset($eventId) && isset($roundId) && isset($heatId)) {
-            return ['event' => $eventId, 'round' => $roundId, 'heat' => $heatId];
-        }
-        Log::debug('There was a file that ended in no process: ' . $fileName);
-        return null;
+        return ['event' => $eventId, 'round' => $roundId, 'heat' => $heatId];
     }
 }
