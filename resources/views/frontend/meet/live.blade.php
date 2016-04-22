@@ -132,7 +132,7 @@
         channel.bind('update', function (data) {
             var eventId = data['data']['event'];
             var roundId = data['data']['round'];
-            console.log('Update: ' + eventId);
+//            console.log('Update: ' + eventId);
             vm.update(eventId, roundId);
             $('#updated-icon-' + eventId).removeClass('hide');
         });
