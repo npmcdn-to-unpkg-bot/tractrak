@@ -66,7 +66,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="lane in heat.lane" :class="{
+                                        <tr v-for="lane in heat.lane | orderBy 'place'" :class="{
                                         'success': lane.place == 1,
                                         'danger':  lane.place == 'DQ' || lane.place == 'FS',
                                         'info':    lane.place == 'SCR' || lane.place == 'DNS',
@@ -119,13 +119,11 @@
     <script src="/js/meet.js"></script>
     <script>
         $(document).ready(function () {
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $(document).on('click', '.nav a', function(e) {
                 var $target = $(e.target);
-                var event = $target.data();
-                $('#updated-icon-' + event['event']).addClass('hide');
-            });
-            $(document).on('click', '.nav a', function() {
+                var event = $target.data('event');
                 $('button.xs-toggle').click();
+                $('#updated-icon-' + event).addClass('hide');
             });
         });
 

@@ -60,9 +60,9 @@ var vm = new Vue({
     el: '#vue',
 
     methods: {
-        update: function (event, round, heat) {
+        update: function (meet, event, round, heat) {
             // TODO: How to access without $children[0]
-            this.$children[0].fetchEvent(meetId, event, round, heat);
+            this.$children[0].fetchEvent(meet, event, round, heat);
         },
 
         updateData: function (data) {
