@@ -53,22 +53,39 @@ class DropBoxController extends Controller
             Log::debug($delta);
 
             foreach ($delta['entries'] as $dropboxFile) {
-                if ($dropboxFile[1] === null) {
+                if ($dropboxFile[1] === null || strpos($dropboxFile[0], '.') === false) {
                     //The file was deleted, so ignore
 //                    Log::debug($dropboxFile[0] . ' was deleted.');
+                    //This is a directory
+                    Log::debug('Dropbox file:' . print_r($dropboxFile, true));
                     continue;
                 }
+
+                //ignore everything but LIF
+                if (strpos($dropboxFile[0], '.lif') === false) {
+                    Log::debug('Ignoring Dropbox file for no .lif:' . $dropboxFile[0]);
+                    continue;
+                }
+
                 $filename = storage_path('meets') . $dropboxFile[0];
                 $dirname = dirname($filename);
                 if (!is_dir($dirname)) {
+                    Log::debug($filename);
+                    Log::debug($dirname);
                     mkdir($dirname, 0750, true);
                 }
 
+//                Log::debug('Dropbox file:' . $dropboxFile[0]);
+//                Log::debug('storage path:' . storage_path('meets'));
+//                Log::debug('filename:'.$filename);
                 $fd = fopen($filename, "wb");
                 $dropboxUser->getFile($dropboxFile[0], $fd);
 
                 // process the file for data
-                $eventRoundHeat = $this->lifFile($filename);
+                $eventRoundHeat = $this->lifFile($filename, $meetId);
+                if (empty($eventRoundHeat)) {
+                    continue;
+                }
 
                 fclose($fd);
 
@@ -106,7 +123,7 @@ class DropBoxController extends Controller
      * @param $file
      * @return array
      */
-    private function lifFile($file)
+    private function lifFile($file, $meetId)
     {
         $file = new \SplFileObject($file);
         $reader = new CsvReader($file);
@@ -132,13 +149,17 @@ class DropBoxController extends Controller
 
                     /** @var Race $race */
                     $race = Race::where([
+                        'meet_id' => $meetId,
                         'event' => $eventId,
                         'round' => $roundId,
                         'heat' => $heatId,
                     ])->firstOrFail();
 
-                    $race->start = $row[10];
+                    if (!empty($row[10])) {
+                        $race->start = $row[10];
+                    }
                     $race->save();
+                    Log::debug("Row 1 processed for {$row[3]}: $eventId|$roundId|$heatId");
                 } else {
                     if (empty($row[1])) {
                         // Team event
@@ -166,8 +187,32 @@ class DropBoxController extends Controller
                         /** @var Team $team */
                         $team = Team::where(['name' => $row[3]])->firstOrFail();
 
-                        $place = isset($row[0]) ? $row[0] : null;
-                        $race->teams()->updateExistingPivot($team->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $place]);
+                        $lane = $race->teams()->find($team->id);
+//                        Log::debug($race->teams());
+//                        Log::debug('Lane');
+//                        Log::debug($lane);
+//                        Log::debug('Pivot');
+//                        Log::debug($lane->pivot);
+
+                        if (isset($row[0])) {
+                            $lane->pivot->place = $row[0];
+                        };
+                        if (isset($row[6])) {
+                            $lane->pivot->result = $row[6];
+                        }
+
+                        $updated = $lane->pivot->save();
+
+//                        Log::debug('Pivot after update:');
+//                        Log::debug($lane->pivot);
+//                        $updated = $race->teams()->updateExistingPivot($team->id, ['lane' => $row[2], 'result' => $row[6], 'place' => $place], false);
+
+                        if ($updated) {
+                            Log::debug("Row successfully processed for team, lane {$row[2]}, {$row[3]}: {$row[0]}: {$row[6]}");
+                        } else {
+                            Log::error("Row NOT processed for team, lane {$row[2]}, {$row[3]}: {$row[0]}: {$row[6]}");
+                            Log::debug($race->teams()->getResults());
+                        }
                     } else {
                         // Athlete event
                         // $row will be an array containing the comma-separated elements of the line:
@@ -191,21 +236,55 @@ class DropBoxController extends Controller
                         //   16 => delta time from previous position?
                         // )
 
-                        $gender = $row[12] === 'M' ? 0 : 1;
+                        if (!empty($row[12])) {
+                            $gender = $row[12] === 'M' ? 0 : 1;
+                            $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender])->firstOrFail();
+                        } else {
+                            $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3]])->firstOrFail();
+                        }
                         /** @var Athlete $athlete */
-                        $athlete = Athlete::where(['firstname' => $row[4], 'lastname' => $row[3], 'gender' => $gender])->firstOrFail();
 
-                        $place = isset($row[0]) ? $row[0] : null;
-                        $result = isset($row[6]) ? $row[6] : null;
+                        $lane = $race->athletes()->find($athlete->id);
 
-                        $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $result, 'place' => $place]);
+                        if (isset($row[0])) {
+                            $lane->pivot->place = $row[0];
+                        };
+                        if (isset($row[6])) {
+                            $lane->pivot->result = $row[6];
+                        }
+
+//                        Log::debug($race->teams());
+//                        Log::debug('Lane');
+//                        Log::debug($lane);
+//                        Log::debug('Pivot');
+//                        Log::debug($lane->pivot);
+
+                        $updated = $lane->pivot->save();
+
+//                        Log::debug('Pivot after update:');
+//                        Log::debug($lane->pivot);
+//                        $updated = $race->athletes()->updateExistingPivot($athlete->id, ['lane' => $row[2], 'result' => $result, 'place' => $place], false);
+
+                        if ($updated) {
+                            Log::debug("$updated row successfully processed for athlete, lane {$row[2]}, {$row[4]} {$row[3]}: {$row[0]}: {$row[6]}");
+                        } else {
+                            Log::debug("$updated Row NOT processed for athlete, lane {$row[2]}, {$row[4]} {$row[3]}: {$row[0]}: {$row[6]}");
+                            Log::debug($race->athletes()->getResults());
+                        }
                     }
                 }
             }
+
             unset($localFile);
         } catch (ModelNotFoundException $e) {
             Log::debug($e);
         }
+
+        if (empty($eventId) || empty($roundId) || empty($heatId)) {
+            Log::debug("Did not have event or round or heat: $eventId|$roundId|$heatId");
+            return [];
+        }
+        Log::debug("Successfully processed event|round|heat: $eventId|$roundId|$heatId");
 
         return ['event' => $eventId, 'round' => $roundId, 'heat' => $heatId];
     }
