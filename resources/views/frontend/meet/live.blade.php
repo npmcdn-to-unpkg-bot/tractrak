@@ -1,11 +1,11 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-{{ config('app.name') }} | {{ $meet->name }}
-@if ($meet->sponsor)
- | {{ $meet->sponsor }}
-@endif
- | {{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state->abbr }}
+    {{ config('app.name') }} | {{ $meet->name }}
+    @if ($meet->sponsor)
+        | {{ $meet->sponsor }}
+    @endif
+    | {{ $meet->stadium->name }}, {{ $meet->stadium->city }}, {{ $meet->stadium->state->abbr }}
 @endsection
 
 @section('content')
@@ -130,10 +130,12 @@
         var pusher = new Pusher("{{env("PUSHER_KEY")}}");
         var channel = pusher.subscribe('meet-{{ $meet->id }}');
         channel.bind('update', function (data) {
+//            console.log(data);
             var eventId = data['data']['event'];
+            var meetId = {{ $meet->id }};
             var roundId = data['data']['round'];
 //            console.log('Update: ' + eventId);
-            vm.update(eventId, roundId);
+            vm.update(meetId, eventId, roundId);
             $('#updated-icon-' + eventId).removeClass('hide');
         });
     </script>

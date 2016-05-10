@@ -424,8 +424,7 @@ class MeetController extends Controller
                         'lane' => $laneNumber,
                         'name' => $athlete->lastname . ', ' . $athlete->firstname,
                         'teamAbbr' => $athlete->teams[0]['abbr'],
-                        'teamName' => $athlete->teams[0]['name'],
-                        'place' => !is_null($athlete->pivot->place) ? is_numeric($athlete->pivot->place) ? (int)$athlete->pivot->place : $athlete->pivot->place : '',
+                        'place' => !is_null($athlete->pivot->place) ? $athlete->pivot->place : '',
                         'result' => !empty($athlete->pivot->result) ? $athlete->pivot->result : '',
                     ];
                     $return[$race->event]['round'][$race->round]['heat'][$race->heat]['lane'] += [$laneNumber => $lane];
@@ -440,7 +439,7 @@ class MeetController extends Controller
                         'lane' => $laneNumber,
                         'name' => $team->name,
                         'teamAbbr' => $team->abbr,
-                        'place' => !is_null($team->pivot->place) ? is_numeric($team->pivot->place) ? (int)$team->pivot->place : $team->pivot->place : '',
+                        'place' => !is_null($team->pivot->place) ? $team->pivot->place : '',
                         'result' => !empty($team->pivot->result) ? $team->pivot->result : '',
                     ];
                     $return[$race->event]['round'][$race->round]['heat'][$race->heat]['lane'] += [$laneNumber => $lane];
@@ -452,23 +451,23 @@ class MeetController extends Controller
         }
 
         //See if we have more than 1 heat in each event, if so, grab the top X places
-        foreach ($return as $event) {
-            $lastRound = end($event['round']);
-            if (count($lastRound['heat']) > 1) {
-                $topPlaces = \DB::table('competitors')
-                    ->whereIn('race_id', array_keys($races->getDictionary()))
-                    ->whereNotNull('result')
-                    ->orderBy('result')
-                    ->limit(10)
-                    ->get();
-                $place = 1;
-                foreach ($topPlaces as $topPlace) {
-//                    $competitor = {$topPlace->competitor_type}->find($topPlace->competitor_id);
-                    $return['leaderBoard'][] = ['result' => $topPlace->result, 'lane' => $topPlace->lane, 'place' => $place++];
-                }
-//                dump($topPlaces);
-            }
-        }
+//        foreach ($return as $event) {
+//            $lastRound = end($event['round']);
+//            if (count($lastRound['heat']) > 1) {
+//                $topPlaces = \DB::table('competitors')
+//                    ->whereIn('race_id', array_keys($races->getDictionary()))
+//                    ->whereNotNull('result')
+//                    ->orderBy('place')
+//                    ->limit(10)
+//                    ->get();
+//                $place = 1;
+//                foreach ($topPlaces as $topPlace) {
+////                    $competitor = {$topPlace->competitor_type}->find($topPlace->competitor_id);
+//                    $return['leaderBoard'][] = ['result' => $topPlace->result, 'lane' => $topPlace->lane, 'place' => $place++];
+//                }
+////                dump($topPlaces);
+//            }
+//        }
         //245, 246, 247, 248
         //dump($return);
 //        foreach ($return as $event){
