@@ -55,5 +55,5 @@
 @endsection
 
 @section('after-scripts-end')
-    <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
+    <script src="//unpkg.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
 @endsection
